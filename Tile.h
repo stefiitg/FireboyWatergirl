@@ -25,8 +25,8 @@ public:
 
 private:
     TileType type_ = TileType::Empty;
-    int col_ = 0;
-    int row_ = 0;
+    [[maybe_unused]] int col_ = 0;
+    [[maybe_unused]] int row_ = 0;
     sf::RectangleShape shape_;
 };
 
