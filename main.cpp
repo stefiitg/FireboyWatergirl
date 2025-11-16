@@ -499,7 +499,7 @@ private:
     }
 
 public:
-    Game(int mapW = 14, int mapH = 9)
+    explicit Game(int mapW = 14, int mapH = 9)
         : window(std::make_unique<sf::RenderWindow>(
               sf::VideoMode(static_cast<unsigned>(mapW * Tile::getSize()),
                             static_cast<unsigned>(mapH * Tile::getSize())),
