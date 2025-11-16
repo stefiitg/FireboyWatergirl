@@ -242,7 +242,7 @@ private:
 
 public:
     // constructor parametric
-    Map(int w = 12, int h = 8, TileType defaultType = TileType::Empty) {
+    explicit Map(int w = 12, int h = 8, TileType defaultType = TileType::Empty) {
         allocateGrid(w,h,defaultType);
     }
 
