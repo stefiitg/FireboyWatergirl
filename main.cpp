@@ -499,30 +499,24 @@ private:
     }
 
 public:
-    explicit Game(int mapW = 14, int mapH = 9)
-        : map(mapW, mapH),
-          fireboy("Fireboy", "assets/fireboy.jpeg", {Tile::getSize()*1.f, Tile::getSize()*(mapH-2.f)}, 3, sf::Color::Red),
-          watergirl("Watergirl", "assets/watergirl.jpg", {Tile::getSize()*5.f, Tile::getSize()*(mapH-2.f)}, 3, sf::Color::Blue)
+    Game(int mapW = 14, int mapH = 9)
+        : window(std::make_unique<sf::RenderWindow>(
+              sf::VideoMode(static_cast<unsigned>(mapW * Tile::getSize()),
+                            static_cast<unsigned>(mapH * Tile::getSize())),
+              "Fireboy & Watergirl")),
+          map(mapW, mapH),
+          fireboy("Fireboy", "assets/fireboy.jpeg",
+                  {Tile::getSize()*1.f, Tile::getSize()*(mapH-2.f)}, 3, sf::Color::Red),
+          watergirl("Watergirl", "assets/watergirl.jpg",
+                    {Tile::getSize()*5.f, Tile::getSize()*(mapH-2.f)}, 3, sf::Color::Blue)
     {
-        // detect headless - verificăm DOAR dacă suntem în CI SAU nu avem DISPLAY pe Linux
-      /* aaaa bool headless = false;
-
-        const char* ciEnv = std::getenv("CI");
-        if (ciEnv != nullptr && std::string(ciEnv) == "true") {
-            std::cout << "Detected CI environment, running in headless mode.\n";
-            headless = true;
-        }*/
-
-        // REPLACE existing headless detection block with this:
-        window = std::make_unique<sf::RenderWindow>(
-            sf::VideoMode(static_cast<unsigned>(mapW * Tile::getSize()), static_cast<unsigned>(mapH * Tile::getSize())),
-            "Fireboy & Watergirl"
-        );
-        if (!window || !window->isOpen()) {
+        // Fail fast if window creation failed (professor requested no headless fallback)
+        if (!window->isOpen()) {
             std::cerr << "Error: failed to create SFML window. Ensure a display is available and SFML is configured correctly.\n";
-            // Fail fast: exit so missing display/assets are noticed by the grader
             std::exit(EXIT_FAILURE);
         }
+
+        // rest of your constructor unchanged...
         map.generateAscendingPlatforms(12345);
 
         // no font/text setup (win messages removed)
