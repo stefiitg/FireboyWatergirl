@@ -18,7 +18,7 @@ Tile::Tile(TileType t, int col, int row)
 {
     shape_.setSize(sf::Vector2f(static_cast<float>(getSize()), static_cast<float>(getSize())));
     shape_.setPosition(static_cast<float>(col * getSize()), static_cast<float>(row * getSize()));
-    
+    //change
     // Set colors based on tile type
     switch (type_) {
         case TileType::Empty:

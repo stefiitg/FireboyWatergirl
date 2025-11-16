@@ -17,7 +17,7 @@ public:
 
     TileType getType() const { return type_; }
     void setType(TileType t) { type_ = t; }
-
+//change
     void draw(sf::RenderTarget& target) const;
     static constexpr int getSize() { return 48; }
 
