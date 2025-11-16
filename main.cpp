@@ -126,7 +126,9 @@ public:
 
     // getters
     const string& getName() const { return name; }
+    // cppcheck-suppress unusedFunction
     int getLives() const { return lives; }
+    // cppcheck-suppress unusedFunction
     sf::Vector2f getPosition() const { return position; }
 
     // expose bounds for collision checks
@@ -324,7 +326,7 @@ public:
         return grid[row][col].getType();
     }
 
-    // get tile type by world position
+    // cppcheck-suppress unusedFunction
     TileType getTileTypeAtWorld(float x, float y) const {
         int col = static_cast<int>(x / Tile::getSize());
         int row = static_cast<int>(y / Tile::getSize());
@@ -497,7 +499,7 @@ private:
     }
 
 public:
-    Game(int mapW = 14, int mapH = 9)
+    explicit Game(int mapW = 14, int mapH = 9)
         : map(mapW, mapH),
           fireboy("Fireboy", "assets/fireboy.jpeg", {Tile::getSize()*1.f, Tile::getSize()*(mapH-2.f)}, 3, sf::Color::Red),
           watergirl("Watergirl", "assets/watergirl.jpg", {Tile::getSize()*5.f, Tile::getSize()*(mapH-2.f)}, 3, sf::Color::Blue)
