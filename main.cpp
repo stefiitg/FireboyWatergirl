@@ -14,6 +14,7 @@
 #include <cassert>
 #include <algorithm>
 #include <memory>
+#include "Tile.h"
 
 #if defined(__clang__)
     #pragma clang diagnostic pop
@@ -27,76 +28,8 @@ using std::cout;
 using std::endl;
 
 
-enum class TileType { Empty, Solid, Fire, Water, ExitFire, ExitWater };
 
-static string toString(TileType t) {
-    switch (t) {
-        case TileType::Empty: return "Empty";
-        case TileType::Solid: return "Solid";
-        case TileType::Fire: return "Fire";
-        case TileType::Water: return "Water";
-        case TileType::ExitFire: return "ExitFire";
-        case TileType::ExitWater: return "ExitWater";
-    }
-    return "Unknown";
-}
 
-class Tile {
-private:
-    TileType type;
-    sf::RectangleShape rect; // visual representation (fallback)
-    int gx, gy; // grid coordinates (col,row)
-    static constexpr float TILE_SIZE = 48.f;
-
-    void initShape() {
-        rect.setSize({TILE_SIZE, TILE_SIZE});
-        rect.setPosition(gx * TILE_SIZE, gy * TILE_SIZE);
-        switch (type) {
-            case TileType::Empty: rect.setFillColor(sf::Color(80,80,80)); break;
-            case TileType::Solid: rect.setFillColor(sf::Color(120,120,120)); break;
-            case TileType::Fire: rect.setFillColor(sf::Color::Red); break;
-            case TileType::Water: rect.setFillColor(sf::Color::Blue); break;
-            case TileType::ExitFire: rect.setFillColor(sf::Color(255,140,0)); break;
-            case TileType::ExitWater: rect.setFillColor(sf::Color(0,200,100)); break;
-        }
-    }
-
-public:
-    // constructor parametric
-    explicit Tile(TileType t , int col , int row )
-        : type(t), gx(col), gy(row) {
-        initShape();
-    }
-
-    // copy / assign default are fine
-    Tile(const Tile& other) = default;
-    Tile& operator=(const Tile& other) = default;
-    ~Tile() = default;
-
-    TileType getType() const { return type; }
-    int getCol() const { return gx; }
-    int getRow() const { return gy; }
-    static float getSize() { return TILE_SIZE; }
-
-    // draw (const)
-    void draw(sf::RenderTarget& target) const {
-        if (type != TileType::Empty) target.draw(rect);
-        else {
-            // draw a faint empty tile if you want
-            // target.draw(rect);
-        }
-    }
-
-    // get bounding box in world coords
-    sf::FloatRect bounds() const {
-        return rect.getGlobalBounds();
-    }
-
-    friend std::ostream& operator<<(std::ostream& os, const Tile& t) {
-        os << "[" << toString(t.type) << " @" << t.gx << "," << t.gy << "]";
-        return os;
-    }
-};
 
 // -------------------------------
 // Character
