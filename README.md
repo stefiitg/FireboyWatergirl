@@ -1,5 +1,5 @@
-# Nu primesc notă pentru că nu am pus titlu și descriere
-
+# Fireboy and watergirl
+Fireboy and watergirl este un joc 2d, in care ajuti personajele sa ajunga la iesiri in acelasi timp. Presonajele, controlate cu WASD si cu TFGH pot interactiona cu diverse obiecte , se pot ajuta unul pe celalalt,dar daca ating elementul opus lor, mor (in cazul nostru doar isi reseteaza pozitia).
 ### Folosiți template-ul corespunzător grupei voastre!
 
 | Laborant  | Link template                                |
