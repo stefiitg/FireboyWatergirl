@@ -509,7 +509,7 @@ private:
         // intentionally do not draw any "WIN" text or overlay
         window->display();
     }
-
+//:)
 public:
     explicit Game(int mapW = 14, int mapH = 9)
         : window(std::make_unique<sf::RenderWindow>(
