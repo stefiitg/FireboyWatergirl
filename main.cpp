@@ -71,7 +71,8 @@ public:
             sprite.setTexture(texture);
             // scale sprite to tile size if texture height > 0
             if (texture.getSize().y > 0) {
-                float factor = Tile::getSize() / texture.getSize().y;
+                // use floating-point division to avoid zero scale when texture is larger than a tile
+                float factor = Tile::getSize() / static_cast<float>(texture.getSize().y);
                 sprite.setScale(factor, factor);
             }
             sprite.setPosition(position);
