@@ -319,6 +319,17 @@ public:
         // place Fire exit on top-right, Water exit on top-left (if available)
         grid[1][width-2] = Tile(TileType::ExitFire, width-2, 1);
         grid[1][1] = Tile(TileType::ExitWater, 1, 1);
+        // adjust the first solid tile: move it one level higher ("putin mai sus"),
+        // without altering existing layout
+        if (height > 3) {
+            grid[3][1] = Tile(TileType::Solid, 1, 3);
+        }
+        // add another solid tile near the previous one: a bit lower and to the right
+        // ("langă acesta, puțin mai jos ca nivel și puțin mai în dreapta")
+        // place at (col=2, row=5) if within bounds
+        if (height > 5 && width > 2) {
+            grid[5][2] = Tile(TileType::Solid, 2, 5);
+        }
     }
 
     // get tile type at world coords (x,y in pixels) OR by grid coords
