@@ -102,14 +102,18 @@ Game::Game(int mapW, int mapH)
           sf::VideoMode(static_cast<unsigned>(mapW * Tile::getSize()),
                         static_cast<unsigned>(mapH * Tile::getSize())),
           "Fireboy & Watergirl")),
-      map(mapW, mapH)
+      map(mapW, mapH),
+      fireboy(std::make_unique<FireboyCharacter>(
+          "Fireboy", "assets/fireboy.jpeg",
+          sf::Vector2f{static_cast<float>(Tile::getSize()) * 1.f,
+                       static_cast<float>(Tile::getSize()) * (mapH - 2.f)},
+          3, sf::Color::Red)),
+      watergirl(std::make_unique<WatergirlCharacter>(
+          "Watergirl", "assets/watergirl.jpg",
+          sf::Vector2f{static_cast<float>(Tile::getSize()) * 5.f,
+                       static_cast<float>(Tile::getSize()) * (mapH - 2.f)},
+          3, sf::Color::Blue))
 {
-    fireboy = std::make_unique<FireboyCharacter>(
-        "Fireboy", "assets/fireboy.jpeg",
-        sf::Vector2f{static_cast<float>(Tile::getSize())*1.f, static_cast<float>(Tile::getSize())*(mapH-2.f)}, 3, sf::Color::Red);
-    watergirl = std::make_unique<WatergirlCharacter>(
-        "Watergirl", "assets/watergirl.jpg",
-        sf::Vector2f{static_cast<float>(Tile::getSize())*5.f, static_cast<float>(Tile::getSize())*(mapH-2.f)}, 3, sf::Color::Blue);
     if (!window->isOpen()) {
         std::cerr << "Error: failed to create SFML window. Ensure a display is available and SFML is configured correctly.\n";
         std::exit(EXIT_FAILURE);

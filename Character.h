@@ -43,10 +43,10 @@ public:
     // state helpers
     void setOnGround(bool state);
 
-    // getters
-    const std::string& getName() const { return name; }
-    int getLives() const { return lives; }
-    sf::Vector2f getPosition() const { return position; }
+    // getters (pot fi neutilizate în unele build-uri CI)
+    [[maybe_unused]] const std::string& getName() const { return name; }
+    [[maybe_unused]] int getLives() const { return lives; }
+    [[maybe_unused]] sf::Vector2f getPosition() const { return position; }
 
     // expose bounds for collision checks
     sf::FloatRect bounds() const;

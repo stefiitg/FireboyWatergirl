@@ -25,7 +25,7 @@ public:
     void generateAscendingPlatforms(unsigned seed = 0);
 
     TileType getTileTypeAtGrid(int col, int row) const;
-    TileType getTileTypeAtWorld(float x, float y) const;
+    [[maybe_unused]] TileType getTileTypeAtWorld(float x, float y) const;
 
     void draw(sf::RenderTarget& target) const;
     friend std::ostream& operator<<(std::ostream& os, const Map& m);
