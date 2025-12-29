@@ -70,6 +70,10 @@ void Map::generateAscendingPlatforms(unsigned seed) {
     grid[height-2][2] = Tile(TileType::Fire, 2, height-2);
     grid[height-3][width-3] = Tile(TileType::Water, width-3, height-3);
     grid[1][width-2] = Tile(TileType::ExitFire, width-2, 1);
+    // add a supporting solid tile exactly under Fireboy's exit
+    if (height > 2) {
+        grid[2][width-2] = Tile(TileType::Solid, width-2, 2);
+    }
     grid[1][1] = Tile(TileType::ExitWater, 1, 1);
     if (height > 3) {
         grid[3][1] = Tile(TileType::Solid, 1, 3);

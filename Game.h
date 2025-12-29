@@ -15,6 +15,13 @@ private:
     bool fireboyAtExit = false;
     bool watergirlAtExit = false;
     bool won = false;
+    bool gameOver = false; // Joc pierdut cand un personaj atinge elementul opus
+    // Elemente UI pentru afisarea mesajului de castig
+    sf::Font winFont;
+    sf::Text winText;
+    bool winFontLoaded = false;
+    // Elemente UI pentru mesajul de pierdere
+    sf::Text loseText;
 
     void processInput(float dt);
     void handleCollisions(Character& ch, const sf::Vector2f& respawnPos,

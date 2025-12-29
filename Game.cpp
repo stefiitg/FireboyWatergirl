@@ -8,7 +8,7 @@ namespace {
 }
 
 void Game::processInput(float dt) {
-    if (won || !window) return;
+    if (won || gameOver || !window) return;
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) fireboy->moveLeft(dt);
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) fireboy->moveRight(dt);
@@ -54,11 +54,13 @@ void Game::handleCollisions(Character& ch, const sf::Vector2f& respawnPos,
             }
 
             if (tt == TileType::Fire && ch.element() == Element::Water) {
-                ch.takeDamageAndRespawn(respawnPos);
+                // A atins elementul opus -> joc pierdut
+                gameOver = true;
                 reachedExitForCharacter = false;
                 return;
             } else if (tt == TileType::Water && ch.element() == Element::Fire) {
-                ch.takeDamageAndRespawn(respawnPos);
+                // A atins elementul opus -> joc pierdut
+                gameOver = true;
                 reachedExitForCharacter = false;
                 return;
             }
@@ -75,7 +77,7 @@ void Game::handleCollisions(Character& ch, const sf::Vector2f& respawnPos,
 }
 
 void Game::update(float dt) {
-    if (won) return;
+    if (won || gameOver) return;
     sf::FloatRect world = map.worldBounds();
     fireboy->update(dt, world);
     watergirl->update(dt, world);
@@ -94,6 +96,44 @@ void Game::render() {
     map.draw(*window);
     fireboy->draw(*window);
     watergirl->draw(*window);
+    // Daca s-a castigat jocul, afiseaza mesajul "WIN"
+    if (won) {
+        // overlay semi-transparent
+        sf::RectangleShape overlay;
+        overlay.setSize(sf::Vector2f(static_cast<float>(window->getSize().x), static_cast<float>(window->getSize().y)));
+        overlay.setFillColor(sf::Color(0, 0, 0, 150));
+        window->draw(overlay);
+
+        if (winFontLoaded) {
+            // centreaza textul in fereastra in functie de dimensiunile curente
+            sf::FloatRect textRect = winText.getLocalBounds();
+            winText.setOrigin(textRect.left + textRect.width / 2.f, textRect.top + textRect.height / 2.f);
+            winText.setPosition(static_cast<float>(window->getSize().x) / 2.f,
+                                static_cast<float>(window->getSize().y) / 2.f);
+            window->draw(winText);
+        } else {
+            // Fallback: seteaza titlul ferestrei ca "WIN"
+            window->setTitle("WIN");
+        }
+    }
+    // Daca jocul este pierdut, afiseaza mesajul "TRY AGAIN!"
+    if (gameOver) {
+        // overlay semi-transparent
+        sf::RectangleShape overlay;
+        overlay.setSize(sf::Vector2f(static_cast<float>(window->getSize().x), static_cast<float>(window->getSize().y)));
+        overlay.setFillColor(sf::Color(0, 0, 0, 150));
+        window->draw(overlay);
+
+        if (winFontLoaded) {
+            sf::FloatRect textRect = loseText.getLocalBounds();
+            loseText.setOrigin(textRect.left + textRect.width / 2.f, textRect.top + textRect.height / 2.f);
+            loseText.setPosition(static_cast<float>(window->getSize().x) / 2.f,
+                                 static_cast<float>(window->getSize().y) / 2.f);
+            window->draw(loseText);
+        } else {
+            window->setTitle("TRY AGAIN!");
+        }
+    }
     window->display();
 }
 
@@ -122,6 +162,38 @@ Game::Game(int mapW, int mapH)
     map.generateAscendingPlatforms(12345);
     fireboy->setFallbackAppearance(sf::Color::Red);
     watergirl->setFallbackAppearance(sf::Color::Blue);
+
+    // Incarca font pentru mesajul de castig
+    // Incercam fonturi uzuale din Windows
+    const char* candidates[] = {
+        "C:\\Windows\\Fonts\\arial.ttf",
+        "C:\\Windows\\Fonts\\segoeui.ttf",
+        "C:\\Windows\\Fonts\\verdana.ttf"
+    };
+    for (const char* path : candidates) {
+        if (winFont.loadFromFile(path)) { winFontLoaded = true; break; }
+    }
+
+    if (winFontLoaded) {
+        winText.setFont(winFont);
+        winText.setString("WIN");
+        // Dimensiunea textului proportional cu inaltimea ferestrei
+        unsigned int size = static_cast<unsigned int>(std::max(30.f, (window->getSize().y * 0.2f)));
+        winText.setCharacterSize(size);
+        winText.setFillColor(sf::Color::Yellow);
+        winText.setOutlineThickness(4.f);
+        winText.setOutlineColor(sf::Color::Black);
+        // Pozitia exacta va fi recalculata in render() pentru a ramane centrata
+        // Configureaza si textul pentru ecranul de pierdere
+        loseText.setFont(winFont);
+        loseText.setString("TRY AGAIN!");
+        loseText.setCharacterSize(size);
+        loseText.setFillColor(sf::Color(220, 20, 60)); // crimson/rosu
+        loseText.setOutlineThickness(4.f);
+        loseText.setOutlineColor(sf::Color::Black);
+    } else {
+        std::cerr << "Warning: Could not load a system font for WIN text. Title fallback will be used.\n";
+    }
 }
 
 std::ostream& operator<<(std::ostream& os, const Game& g) {
