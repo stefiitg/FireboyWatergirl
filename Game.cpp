@@ -21,6 +21,8 @@ void Game::processInput(float dt) {
 
 void Game::handleCollisions(Character& ch, const sf::Vector2f& respawnPos,
                             bool& reachedExitForCharacter, TileType whatExit) {
+    // Parametri nefolositi in noua logica (respawn-ul nu mai este folosit cand e game over)
+    (void) respawnPos;
     (void) whatExit;
     sf::FloatRect cb = ch.bounds();
     int leftCol = std::max(0, static_cast<int>(cb.left / Tile::getSize()));
