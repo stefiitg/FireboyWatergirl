@@ -1,5 +1,4 @@
 #include "Map.h"
-#include <random>
 #include <algorithm>
 
 void Map::allocateGrid(int w, int h, TileType defaultType) {
@@ -46,25 +45,24 @@ Map::~Map() {
 }
 
 void Map::generateAscendingPlatforms(unsigned seed) {
-    for (int r=0;r<height;++r)
-        for (int c=0;c<width;++c)
+    // seed nefolosit: generarea aleatoare a fost eliminată pentru a păstra o hartă fixă
+    (void)seed;
+
+    // Resetăm toată harta la Empty
+    for (int r = 0; r < height; ++r)
+        for (int c = 0; c < width; ++c)
             grid[r][c] = Tile(TileType::Empty, c, r);
 
-    std::mt19937 rng((seed==0)? std::random_device{}() : seed);
-    std::uniform_int_distribution<int> gapDist(1,3);
-    std::uniform_int_distribution<int> lengthDist(1,3);
-
-    int currentRow = height - 2;
-    int c = 1;
-    while (c < width-1 && currentRow > 0) {
-        int len = lengthDist(rng);
-        for (int k = 0; k < len && c < width-1; ++k) {
-            grid[currentRow][c] = Tile(TileType::Solid, c, currentRow);
-            ++c;
+    // Plăci solide plasate manual exact unde erau generate anterior (col, row)
+    const std::pair<int,int> solids[] = {
+        {1, 7}, {3, 7}, {7, 6}, {9, 5}, {11, 4}
+    };
+    for (const auto& rc : solids) {
+        int c = rc.first;
+        int r = rc.second;
+        if (r >= 0 && r < height && c >= 0 && c < width) {
+            grid[r][c] = Tile(TileType::Solid, c, r);
         }
-        int gap = gapDist(rng);
-        c += gap;
-        if (currentRow > 1) currentRow -= 1;
     }
 
     grid[height-2][2] = Tile(TileType::Fire, 2, height-2);
