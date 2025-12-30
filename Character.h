@@ -59,7 +59,6 @@ public:
     void moveLeft(float dt);
     void moveRight(float dt);
     void jump();
-    void takeDamageAndRespawn(const sf::Vector2f& respawnPos);
     void draw(sf::RenderTarget& target) const;
     void setFallbackAppearance(const sf::Color& c);
     void stopVerticalMovement();

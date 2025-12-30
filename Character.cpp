@@ -125,12 +125,7 @@ void Character::jump() {
     }
 }
 
-void Character::takeDamageAndRespawn(const sf::Vector2f& respawnPos) {
-    if (lives > 0) --lives;
-    setPosition(respawnPos);
-    velocity = {0.f, 0.f};
-    onGround = false;
-}
+// takeDamageAndRespawn removed: game now transitions to Game Over instead of respawning
 
 void Character::draw(sf::RenderTarget& target) const {
     if (usingTexture) target.draw(sprite);
