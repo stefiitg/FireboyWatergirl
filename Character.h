@@ -36,6 +36,20 @@ public:
     // polymorphic attribute specific to the theme (used for gameplay rules)
     virtual Element element() const = 0;
 
+    // Interacțiuni polimorfice cu tile-urile (evită if-uri pe tipuri în Game)
+    // Implicit, un personaj neutru: doar Solid este solid, Fire/Water sunt letale,
+    // niciun exit nu este potrivit; Half-tiles partea de sus este letală pentru ambele.
+    virtual bool isSolidOn(TileType tt) const {
+        return tt == TileType::Solid; // implicit doar Solid este suport
+    }
+    virtual bool isDeadlyOn(TileType tt) const {
+        return tt == TileType::Fire || tt == TileType::Water; // implicit ambele omoară
+    }
+    virtual bool canExitThrough(TileType tt) const { return false; }
+    virtual bool isTopHalfDeadly(TileType tt) const {
+        return tt == TileType::HalfFire || tt == TileType::HalfWater;
+    }
+
     // rule of 3 (explicit copy ops for the exercise)
     Character(const Character& other);
     Character& operator=(const Character& other);
@@ -71,18 +85,36 @@ class FireboyCharacter : public Character {
 public:
     using Character::Character;
     Element element() const override { return Element::Fire; }
+    bool isSolidOn(TileType tt) const override {
+        return tt == TileType::Solid || tt == TileType::Fire;
+    }
+    bool isDeadlyOn(TileType tt) const override {
+        return tt == TileType::Water; // apa omoară focul
+    }
+    bool canExitThrough(TileType tt) const override { return tt == TileType::ExitFire; }
+    bool isTopHalfDeadly(TileType tt) const override { return tt == TileType::HalfWater; }
 };
 
 class WatergirlCharacter : public Character {
 public:
     using Character::Character;
     Element element() const override { return Element::Water; }
+    bool isSolidOn(TileType tt) const override {
+        return tt == TileType::Solid || tt == TileType::Water;
+    }
+    bool isDeadlyOn(TileType tt) const override {
+        return tt == TileType::Fire; // focul omoară apa
+    }
+    bool canExitThrough(TileType tt) const override { return tt == TileType::ExitWater; }
+    bool isTopHalfDeadly(TileType tt) const override { return tt == TileType::HalfFire; }
 };
 
 class RockCharacter : public Character {
 public:
     using Character::Character;
     Element element() const override { return Element::Neutral; }
+    // pentru rock: doar Solid e suport, ambele lichide sunt letale, nu are exit dedicat,
+    // ambele jumătăți superioare sunt letale
 };
 
 #endif // OOP_CHARACTER_H

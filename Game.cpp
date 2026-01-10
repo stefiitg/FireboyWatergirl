@@ -34,13 +34,8 @@ void Game::handleCollisions(Character& ch, const sf::Vector2f& respawnPos,
         for (int c = leftCol; c <= rightCol; ++c) {
             TileType tt = map.getTileTypeAtGrid(c, r);
 
-            // Tratare solidă standard (Solid sau Fire/Water pentru propriul element)
-            bool isSolidForThis = false;
-            if (tt == TileType::Solid) isSolidForThis = true;
-            else if (tt == TileType::Fire && ch.element() == Element::Fire) isSolidForThis = true;
-            else if (tt == TileType::Water && ch.element() == Element::Water) isSolidForThis = true;
-
-            if (isSolidForThis) {
+            // Tratare solidă pe baza polimorfismului
+            if (ch.isSolidOn(tt)) {
                 sf::FloatRect tileRect(c * Tile::getSize(), r * Tile::getSize(), Tile::getSize(), Tile::getSize());
                 if (intersects(cb, tileRect)) {
                     float charCenterY = cb.top + cb.height*0.5f;
@@ -56,7 +51,7 @@ void Game::handleCollisions(Character& ch, const sf::Vector2f& respawnPos,
                 }
             }
 
-            // Tratare specială pentru HalfFire / HalfWater
+            // Tratare specială pentru HalfFire / HalfWater (jumătate inferioară solidă, jumătate superioară poate fi letală)
             if (tt == TileType::HalfFire || tt == TileType::HalfWater) {
                 sf::FloatRect tileRect(c * Tile::getSize(), r * Tile::getSize(), Tile::getSize(), Tile::getSize());
                 const float halfH = Tile::getSize() * 0.5f;
@@ -77,10 +72,9 @@ void Game::handleCollisions(Character& ch, const sf::Vector2f& respawnPos,
                     cb = ch.bounds();
                 }
 
-                // Partea de sus: periculoasă pentru elementul opus; traversabilă pentru același element
+                // Partea de sus: periculoasă în funcție de personaj (polimorfic)
                 if (intersects(cb, topRect)) {
-                    bool isFireTop = (tt == TileType::HalfFire);
-                    if ((isFireTop && ch.element() == Element::Water) || (!isFireTop && ch.element() == Element::Fire)) {
+                    if (ch.isTopHalfDeadly(tt)) {
                         gameOver = true;
                         reachedExitForCharacter = false;
                         return;
@@ -104,22 +98,14 @@ void Game::handleCollisions(Character& ch, const sf::Vector2f& respawnPos,
                 }
             }
 
-            if (tt == TileType::Fire && ch.element() == Element::Water) {
-                // A atins elementul opus -> joc pierdut
-                gameOver = true;
-                reachedExitForCharacter = false;
-                return;
-            } else if (tt == TileType::Water && ch.element() == Element::Fire) {
-                // A atins elementul opus -> joc pierdut
+            if (ch.isDeadlyOn(tt)) {
+                // A atins un tile letal pentru acest personaj -> joc pierdut
                 gameOver = true;
                 reachedExitForCharacter = false;
                 return;
             }
 
-            if (tt == TileType::ExitFire && ch.element() == Element::Fire) {
-                sf::FloatRect tileRect(c * Tile::getSize(), r * Tile::getSize(), Tile::getSize(), Tile::getSize());
-                if (intersects(cb, tileRect)) reachedExitForCharacter = true;
-            } else if (tt == TileType::ExitWater && ch.element() == Element::Water) {
+            if (ch.canExitThrough(tt)) {
                 sf::FloatRect tileRect(c * Tile::getSize(), r * Tile::getSize(), Tile::getSize(), Tile::getSize());
                 if (intersects(cb, tileRect)) reachedExitForCharacter = true;
             }
