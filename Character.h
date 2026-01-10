@@ -49,7 +49,8 @@ public:
     virtual bool isDeadlyOn(TileType tt) const {
         return tt == TileType::Fire || tt == TileType::Water; // implicit ambele omoară
     }
-    virtual bool canExitThrough(TileType tt) const { return false; }
+    // nu folosim parametrul in implementarea de baza; omitem numele pentru a evita -Werror=unused-parameter
+    virtual bool canExitThrough(TileType) const { return false; }
     virtual bool isTopHalfDeadly(TileType tt) const {
         return tt == TileType::HalfFire || tt == TileType::HalfWater;
     }
