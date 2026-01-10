@@ -128,6 +128,11 @@ void Character::jump() {
 // takeDamageAndRespawn removed: game now transitions to Game Over instead of respawning
 
 void Character::draw(sf::RenderTarget& target) const {
+    // NVI: interfață non-virtuală, delegă la hook-ul virtual
+    drawImpl(target);
+}
+
+void Character::drawImpl(sf::RenderTarget& target) const {
     if (usingTexture) target.draw(sprite);
     else target.draw(fallbackShape);
 }
@@ -140,7 +145,11 @@ void Character::setFallbackAppearance(const sf::Color& c) {
 
 void Character::stopVerticalMovement() { velocity.y = 0.f; }
 
+void Character::print(std::ostream& os) const {
+    os << name << " pos=(" << (int)position.x << "," << (int)position.y << ") lives=" << lives;
+}
+
 std::ostream& operator<<(std::ostream& os, const Character& c) {
-    os << c.name << " pos=(" << (int)c.position.x << "," << (int)c.position.y << ") lives=" << c.lives;
+    c.print(os);
     return os;
 }

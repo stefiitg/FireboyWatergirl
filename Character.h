@@ -82,7 +82,13 @@ public:
     void setFallbackAppearance(const sf::Color& c);
     void stopVerticalMovement();
 
+    // Afișare virtuală: operator<< va apela această metodă
+    virtual void print(std::ostream& os) const;
+
     friend std::ostream& operator<<(std::ostream& os, const Character& c);
+protected:
+    // NVI pe randare: draw() public non-virtual va apela acest hook virtual
+    virtual void drawImpl(sf::RenderTarget& target) const;
 };
 
 // Derived characters
@@ -92,6 +98,10 @@ public:
     Element element() const override { return Element::Fire; }
     std::unique_ptr<Character> clone() const override {
         return std::make_unique<FireboyCharacter>(*this);
+    }
+    void print(std::ostream& os) const override {
+        Character::print(os);
+        os << " element=Fire";
     }
     bool isSolidOn(TileType tt) const override {
         return tt == TileType::Solid || tt == TileType::Fire;
@@ -110,6 +120,10 @@ public:
     std::unique_ptr<Character> clone() const override {
         return std::make_unique<WatergirlCharacter>(*this);
     }
+    void print(std::ostream& os) const override {
+        Character::print(os);
+        os << " element=Water";
+    }
     bool isSolidOn(TileType tt) const override {
         return tt == TileType::Solid || tt == TileType::Water;
     }
@@ -126,6 +140,10 @@ public:
     Element element() const override { return Element::Neutral; }
     std::unique_ptr<Character> clone() const override {
         return std::make_unique<RockCharacter>(*this);
+    }
+    void print(std::ostream& os) const override {
+        Character::print(os);
+        os << " element=Neutral";
     }
     // pentru rock: doar Solid e suport, ambele lichide sunt letale, nu are exit dedicat,
     // ambele jumătăți superioare sunt letale
