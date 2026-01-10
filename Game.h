@@ -2,6 +2,7 @@
 #define OOP_GAME_H
 
 #include <memory>
+#include <utility>
 #include <SFML/Graphics.hpp>
 #include "Map.h"
 #include "Character.h"
@@ -38,6 +39,30 @@ private:
 
 public:
     explicit Game(int mapW = 14, int mapH = 9);
+    // Copiere profunda folosind clone() pentru personajele polimorfice
+    Game(const Game& other);
+    // Copy-and-swap assignment
+    Game& operator=(Game other);
+    // swap pentru copy-and-swap
+    void swap(Game& other) noexcept {
+        using std::swap;
+        swap(window, other.window);
+        swap(map, other.map);
+        swap(fireboy, other.fireboy);
+        swap(watergirl, other.watergirl);
+        swap(fireboyPrototype, other.fireboyPrototype);
+        swap(watergirlPrototype, other.watergirlPrototype);
+        swap(fireboyAtExit, other.fireboyAtExit);
+        swap(watergirlAtExit, other.watergirlAtExit);
+        swap(won, other.won);
+        swap(gameOver, other.gameOver);
+        swap(totalCoins, other.totalCoins);
+        swap(collectedCoins, other.collectedCoins);
+        swap(winFont, other.winFont);
+        swap(winText, other.winText);
+        swap(winFontLoaded, other.winFontLoaded);
+        swap(loseText, other.loseText);
+    }
     friend std::ostream& operator<<(std::ostream& os, const Game& g);
     void run();
 };

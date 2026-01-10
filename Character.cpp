@@ -1,5 +1,6 @@
 #include "Character.h"
 #include <algorithm>
+#include <utility>
 
 void Character::initFallbackShape(const sf::Color& c, const sf::Vector2f& size) {
     fallbackShape.setSize(size);
@@ -67,6 +68,25 @@ Character& Character::operator=(const Character& other) {
     jumpImpulse = other.jumpImpulse;
     if (usingTexture) sprite.setTexture(texture);
     return *this;
+}
+
+void Character::swap(Character& other) noexcept {
+    using std::swap;
+    swap(name, other.name);
+    swap(texture, other.texture);
+    swap(sprite, other.sprite);
+    swap(fallbackShape, other.fallbackShape);
+    swap(usingTexture, other.usingTexture);
+    swap(position, other.position);
+    swap(velocity, other.velocity);
+    swap(lives, other.lives);
+    swap(onGround, other.onGround);
+    swap(speed, other.speed);
+    swap(jumpImpulse, other.jumpImpulse);
+
+    // Reatașează corect textura la sprite pentru ambele obiecte după swap
+    if (usingTexture) sprite.setTexture(texture);
+    if (other.usingTexture) other.sprite.setTexture(other.texture);
 }
 
 sf::FloatRect Character::bounds() const {

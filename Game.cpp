@@ -1,10 +1,49 @@
 #include "Game.h"
 #include <iostream>
+#include <utility>
 
 namespace {
     inline bool intersects(const sf::FloatRect& a, const sf::FloatRect& b) {
         return a.intersects(b);
     }
+}
+
+// Constructor de copiere: copiere profunda pentru pointerii polimorfici si reconstruirea ferestrei
+Game::Game(const Game& other)
+    : map(other.map),
+      fireboyAtExit(other.fireboyAtExit),
+      watergirlAtExit(other.watergirlAtExit),
+      won(other.won),
+      gameOver(other.gameOver),
+      totalCoins(other.totalCoins),
+      collectedCoins(other.collectedCoins),
+      winFont(other.winFont),
+      winText(other.winText),
+      winFontLoaded(other.winFontLoaded),
+      loseText(other.loseText)
+{
+    // Reconstruim fereastra pe baza dimensiunilor jocului/copiei
+    unsigned int wPx = static_cast<unsigned>(map.getWidth() * Tile::getSize());
+    unsigned int hPx = static_cast<unsigned>(map.getHeight() * Tile::getSize());
+    window = std::make_unique<sf::RenderWindow>(sf::VideoMode(wPx, hPx), "Fireboy & Watergirl");
+
+    // Cloneaza personajele si prototipurile
+    if (other.fireboy) fireboy = other.fireboy->clone();
+    if (other.watergirl) watergirl = other.watergirl->clone();
+    if (other.fireboyPrototype) fireboyPrototype = other.fireboyPrototype->clone();
+    if (other.watergirlPrototype) watergirlPrototype = other.watergirlPrototype->clone();
+
+    // Asigura corect fontul in textele copiate (sf::Text tine un pointer catre font)
+    if (winFontLoaded) {
+        winText.setFont(winFont);
+        loseText.setFont(winFont);
+    }
+}
+
+// Operator de atribuire prin copy-and-swap
+Game& Game::operator=(Game other) {
+    this->swap(other);
+    return *this;
 }
 
 void Game::processInput(float dt) {

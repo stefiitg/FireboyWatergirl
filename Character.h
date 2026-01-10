@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <memory>
+#include <utility>
 #include <string>
 #include <ostream>
 #include "Tile.h"
@@ -57,7 +58,12 @@ public:
 
     // rule of 3 (explicit copy ops for the exercise)
     Character(const Character& other);
+    // Nota: Clasa este abstractă; semnătura by-value (copy-and-swap canonic) nu este permisă.
+    // Folosim o variantă clasică prin const&.
     Character& operator=(const Character& other);
+
+    // swap helper for copy-and-swap
+    void swap(Character& other) noexcept;
 
     // state helpers
     void setOnGround(bool state);
@@ -94,7 +100,13 @@ protected:
 // Derived characters
 class FireboyCharacter : public Character {
 public:
-    using Character::Character;
+    // Constructor explicit care apelează constructorul bazei în lista de inițializare
+    FireboyCharacter(const std::string& nm,
+                     const std::string& texturePath,
+                     const sf::Vector2f& pos = {0.f, 0.f},
+                     int lifeCount = 3,
+                     const sf::Color& fallbackColor = sf::Color::White)
+        : Character(nm, texturePath, pos, lifeCount, fallbackColor) {}
     Element element() const override { return Element::Fire; }
     std::unique_ptr<Character> clone() const override {
         return std::make_unique<FireboyCharacter>(*this);
@@ -115,7 +127,13 @@ public:
 
 class WatergirlCharacter : public Character {
 public:
-    using Character::Character;
+    // Constructor explicit care apelează constructorul bazei în lista de inițializare
+    WatergirlCharacter(const std::string& nm,
+                       const std::string& texturePath,
+                       const sf::Vector2f& pos = {0.f, 0.f},
+                       int lifeCount = 3,
+                       const sf::Color& fallbackColor = sf::Color::White)
+        : Character(nm, texturePath, pos, lifeCount, fallbackColor) {}
     Element element() const override { return Element::Water; }
     std::unique_ptr<Character> clone() const override {
         return std::make_unique<WatergirlCharacter>(*this);
@@ -136,7 +154,13 @@ public:
 
 class RockCharacter : public Character {
 public:
-    using Character::Character;
+    // Constructor explicit care apelează constructorul bazei în lista de inițializare
+    RockCharacter(const std::string& nm,
+                  const std::string& texturePath,
+                  const sf::Vector2f& pos = {0.f, 0.f},
+                  int lifeCount = 3,
+                  const sf::Color& fallbackColor = sf::Color::White)
+        : Character(nm, texturePath, pos, lifeCount, fallbackColor) {}
     Element element() const override { return Element::Neutral; }
     std::unique_ptr<Character> clone() const override {
         return std::make_unique<RockCharacter>(*this);
