@@ -88,6 +88,22 @@ void Game::handleCollisions(Character& ch, const sf::Vector2f& respawnPos,
                 }
             }
 
+            // Monedă: zona activă este mijlocul jumătății superioare.
+            // Nu este solidă; la atingere, moneda dispare și se contorizează.
+            if (tt == TileType::Coin) {
+                sf::FloatRect tileRect(c * Tile::getSize(), r * Tile::getSize(), Tile::getSize(), Tile::getSize());
+                const float halfH = Tile::getSize() * 0.5f;
+                const float quarterW = Tile::getSize() * 0.25f;
+                sf::FloatRect coinRect(tileRect.left + quarterW, tileRect.top,
+                                       Tile::getSize() * 0.5f, halfH);
+                if (intersects(cb, coinRect)) {
+                    // colecteaza moneda o singura data
+                    collectedCoins++;
+                    map.setTileTypeAtGrid(c, r, TileType::Empty);
+                    // Recalculeaza bounds-ul daca pozitia s-a schimbat (nu se schimba aici)
+                }
+            }
+
             if (tt == TileType::Fire && ch.element() == Element::Water) {
                 // A atins elementul opus -> joc pierdut
                 gameOver = true;
@@ -120,7 +136,7 @@ void Game::update(float dt) {
     handleCollisions(*fireboy, map.respawnWorldPosForFire(), fireboyAtExit, TileType::ExitFire);
     handleCollisions(*watergirl, map.respawnWorldPosForWater(), watergirlAtExit, TileType::ExitWater);
 
-    if (fireboyAtExit && watergirlAtExit) {
+    if (fireboyAtExit && watergirlAtExit && collectedCoins >= totalCoins) {
         won = true;
     }
 }
@@ -195,6 +211,14 @@ Game::Game(int mapW, int mapH)
     }
 
     map.generateAscendingPlatforms(12345);
+    // calculeaza totalul de monede initiale pe harta
+    totalCoins = 0;
+    collectedCoins = 0;
+    for (int rr = 0; rr < map.getHeight(); ++rr) {
+        for (int cc = 0; cc < map.getWidth(); ++cc) {
+            if (map.getTileTypeAtGrid(cc, rr) == TileType::Coin) totalCoins++;
+        }
+    }
     fireboy->setFallbackAppearance(sf::Color::Red);
     watergirl->setFallbackAppearance(sf::Color::Blue);
 

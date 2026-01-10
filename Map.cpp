@@ -115,6 +115,11 @@ void Map::draw(sf::RenderTarget& target) const {
             grid[r][c].draw(target);
 }
 
+void Map::setTileTypeAtGrid(int col, int row, TileType t) {
+    if (col < 0 || col >= width || row < 0 || row >= height) return;
+    grid[row][col] = Tile(t, col, row);
+}
+
 std::ostream& operator<<(std::ostream& os, const Map& m) {
     os << "Map " << m.width << "x" << m.height << "\n";
     for (int r = 0; r < m.height; ++r) {

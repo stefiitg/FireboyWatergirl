@@ -16,6 +16,9 @@ private:
     bool watergirlAtExit = false;
     bool won = false;
     bool gameOver = false; // Joc pierdut cand un personaj atinge elementul opus
+    // Progres monede
+    int totalCoins = 0;
+    int collectedCoins = 0;
     // Elemente UI pentru afisarea mesajului de castig
     sf::Font winFont;
     sf::Text winText;

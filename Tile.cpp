@@ -9,6 +9,7 @@ std::string toString(TileType t) {
         case TileType::Water: return "Water";
         case TileType::HalfFire: return "HalfFire";
         case TileType::HalfWater: return "HalfWater";
+        case TileType::Coin: return "Coin";
         case TileType::ExitFire: return "ExitFire";
         case TileType::ExitWater: return "ExitWater";
     }
@@ -42,6 +43,10 @@ Tile::Tile(TileType t, int col, int row)
         case TileType::HalfWater:
             // culoare orientativă; randarea reală desenează două jumătăți
             shape_.setFillColor(sf::Color::Blue);
+            break;
+        case TileType::Coin:
+            // culoare orientativă; randarea reală desenează doar mijlocul jumătății superioare
+            shape_.setFillColor(sf::Color(200, 200, 0));
             break;
         case TileType::ExitFire:
             shape_.setFillColor(sf::Color(255, 165, 0)); // Orange
@@ -78,6 +83,27 @@ void Tile::draw(sf::RenderTarget& target) const {
         // Ordinea de desen nu contează mult aici, dar desenăm întâi partea de jos
         target.draw(bottom);
         target.draw(top);
+        return;
+    }
+
+    // Coin: desenăm doar zona de monedă (mijlocul jumătății superioare) în galben
+    if (type_ == TileType::Coin) {
+        const sf::Vector2f pos = shape_.getPosition();
+        const sf::Vector2f size = shape_.getSize();
+        const float halfH = size.y / 2.f; // jumătatea superioară
+        const float quarterW = size.x / 4.f;
+        const float coinLeft = pos.x + quarterW;      // exclude 1/4 stânga
+        const float coinWidth = size.x / 2.f;         // mijloc (1/2 lățime)
+        const float coinTop = pos.y;                  // în jumătatea superioară
+        const float coinHeight = halfH;               // toată jumătatea superioară
+
+        sf::RectangleShape coin(sf::Vector2f(coinWidth, coinHeight));
+        coin.setPosition(sf::Vector2f(coinLeft, coinTop));
+        coin.setFillColor(sf::Color(255, 215, 0)); // gold
+        // opțional o margine ușoară
+        coin.setOutlineThickness(1.f);
+        coin.setOutlineColor(sf::Color(160, 120, 0));
+        target.draw(coin);
         return;
     }
 
