@@ -34,6 +34,7 @@ void Game::handleCollisions(Character& ch, const sf::Vector2f& respawnPos,
         for (int c = leftCol; c <= rightCol; ++c) {
             TileType tt = map.getTileTypeAtGrid(c, r);
 
+            // Tratare solidă standard (Solid sau Fire/Water pentru propriul element)
             bool isSolidForThis = false;
             if (tt == TileType::Solid) isSolidForThis = true;
             else if (tt == TileType::Fire && ch.element() == Element::Fire) isSolidForThis = true;
@@ -52,6 +53,38 @@ void Game::handleCollisions(Character& ch, const sf::Vector2f& respawnPos,
                         ch.stopVerticalMovement();
                     }
                     cb = ch.bounds();
+                }
+            }
+
+            // Tratare specială pentru HalfFire / HalfWater
+            if (tt == TileType::HalfFire || tt == TileType::HalfWater) {
+                sf::FloatRect tileRect(c * Tile::getSize(), r * Tile::getSize(), Tile::getSize(), Tile::getSize());
+                const float halfH = Tile::getSize() * 0.5f;
+                sf::FloatRect topRect(tileRect.left, tileRect.top, tileRect.width, halfH);
+                sf::FloatRect bottomRect(tileRect.left, tileRect.top + halfH, tileRect.width, halfH);
+
+                // Partea de jos: solidă pentru toți
+                if (intersects(cb, bottomRect)) {
+                    float charCenterY = cb.top + cb.height * 0.5f;
+                    float tileCenterY = bottomRect.top + bottomRect.height * 0.5f;
+                    ch.setOnGround(true);
+                    if (charCenterY < tileCenterY) {
+                        ch.setPosition({cb.left, bottomRect.top - cb.height});
+                    } else {
+                        ch.setPosition({cb.left, bottomRect.top + bottomRect.height});
+                        ch.stopVerticalMovement();
+                    }
+                    cb = ch.bounds();
+                }
+
+                // Partea de sus: periculoasă pentru elementul opus; traversabilă pentru același element
+                if (intersects(cb, topRect)) {
+                    bool isFireTop = (tt == TileType::HalfFire);
+                    if ((isFireTop && ch.element() == Element::Water) || (!isFireTop && ch.element() == Element::Fire)) {
+                        gameOver = true;
+                        reachedExitForCharacter = false;
+                        return;
+                    }
                 }
             }
 

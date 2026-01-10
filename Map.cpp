@@ -65,8 +65,25 @@ void Map::generateAscendingPlatforms(unsigned seed) {
         }
     }
 
-    grid[height-2][2] = Tile(TileType::Fire, 2, height-2);
-    grid[height-3][width-3] = Tile(TileType::Water, width-3, height-3);
+    // Inlocuire: la (row:7,col:2) -> HalfFire; la (row:6,col:11) -> HalfWater
+    grid[height-2][2] = Tile(TileType::HalfFire, 2, height-2);
+    grid[height-3][width-3] = Tile(TileType::HalfWater, width-3, height-3);
+
+    // Cerinta noua: la (row:7,col:1) inlocuieste Solid cu HalfFire
+    if (height > 2 && width > 1) {
+        grid[height-2][1] = Tile(TileType::HalfFire, 1, height-2);
+    }
+
+    // Adauga 3 tile-uri Solid: (row:7,col:0), (row:6,col:10), (row:6,col:12)
+    if (height > 2 && width > 0) {
+        grid[height-2][0] = Tile(TileType::Solid, 0, height-2);
+    }
+    if (height > 3 && width > 10) {
+        grid[height-3][10] = Tile(TileType::Solid, 10, height-3);
+    }
+    if (height > 3 && width > 12) {
+        grid[height-3][12] = Tile(TileType::Solid, 12, height-3);
+    }
     grid[1][width-2] = Tile(TileType::ExitFire, width-2, 1);
     // add a supporting solid tile exactly under Fireboy's exit
     if (height > 2) {
