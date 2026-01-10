@@ -8,7 +8,15 @@ namespace {
 }
 
 void Game::processInput(float dt) {
-    if (won || gameOver || !window) return;
+    if (!window) return;
+
+    // Permite resetarea nivelului cu tasta R cand s-a castigat sau pierdut
+    if (won || gameOver) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
+            resetLevel();
+        }
+        return;
+    }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) fireboy->moveLeft(dt);
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) fireboy->moveRight(dt);
@@ -208,6 +216,10 @@ Game::Game(int mapW, int mapH)
     fireboy->setFallbackAppearance(sf::Color::Red);
     watergirl->setFallbackAppearance(sf::Color::Blue);
 
+    // Salveaza prototipurile initiale (pentru resetare prin clone)
+    fireboyPrototype = fireboy->clone();
+    watergirlPrototype = watergirl->clone();
+
     // Incarca font pentru mesajul de castig
     // Incercam fonturi uzuale din Windows
     const char* candidates[] = {
@@ -239,6 +251,36 @@ Game::Game(int mapW, int mapH)
     } else {
         std::cerr << "Warning: Could not load a system font for WIN text. Title fallback will be used.\n";
     }
+}
+
+void Game::resetLevel() {
+    // Regenerare harta si resetare monede
+    map.generateAscendingPlatforms(12345);
+    totalCoins = 0;
+    collectedCoins = 0;
+    for (int rr = 0; rr < map.getHeight(); ++rr) {
+        for (int cc = 0; cc < map.getWidth(); ++cc) {
+            if (map.getTileTypeAtGrid(cc, rr) == TileType::Coin) totalCoins++;
+        }
+    }
+
+    // Recreeaza personajele din prototipuri
+    if (fireboyPrototype) fireboy = fireboyPrototype->clone();
+    if (watergirlPrototype) watergirl = watergirlPrototype->clone();
+
+    // Reseteaza pozitiile la punctele de respawn
+    fireboy->setPosition(map.respawnWorldPosForFire());
+    watergirl->setPosition(map.respawnWorldPosForWater());
+
+    // Reaplica fallback appearance (in cazul build-urilor fara texturi)
+    fireboy->setFallbackAppearance(sf::Color::Red);
+    watergirl->setFallbackAppearance(sf::Color::Blue);
+
+    // Reset flags
+    won = false;
+    gameOver = false;
+    fireboyAtExit = false;
+    watergirlAtExit = false;
 }
 
 std::ostream& operator<<(std::ostream& os, const Game& g) {

@@ -2,6 +2,7 @@
 #define OOP_CHARACTER_H
 
 #include <SFML/Graphics.hpp>
+#include <memory>
 #include <string>
 #include <ostream>
 #include "Tile.h"
@@ -35,6 +36,9 @@ public:
 
     // polymorphic attribute specific to the theme (used for gameplay rules)
     virtual Element element() const = 0;
+
+    // "Constructor" virtual (clone) pentru copiere polimorfă
+    virtual std::unique_ptr<Character> clone() const = 0;
 
     // Interacțiuni polimorfice cu tile-urile (evită if-uri pe tipuri în Game)
     // Implicit, un personaj neutru: doar Solid este solid, Fire/Water sunt letale,
@@ -85,6 +89,9 @@ class FireboyCharacter : public Character {
 public:
     using Character::Character;
     Element element() const override { return Element::Fire; }
+    std::unique_ptr<Character> clone() const override {
+        return std::make_unique<FireboyCharacter>(*this);
+    }
     bool isSolidOn(TileType tt) const override {
         return tt == TileType::Solid || tt == TileType::Fire;
     }
@@ -99,6 +106,9 @@ class WatergirlCharacter : public Character {
 public:
     using Character::Character;
     Element element() const override { return Element::Water; }
+    std::unique_ptr<Character> clone() const override {
+        return std::make_unique<WatergirlCharacter>(*this);
+    }
     bool isSolidOn(TileType tt) const override {
         return tt == TileType::Solid || tt == TileType::Water;
     }
@@ -113,6 +123,9 @@ class RockCharacter : public Character {
 public:
     using Character::Character;
     Element element() const override { return Element::Neutral; }
+    std::unique_ptr<Character> clone() const override {
+        return std::make_unique<RockCharacter>(*this);
+    }
     // pentru rock: doar Solid e suport, ambele lichide sunt letale, nu are exit dedicat,
     // ambele jumătăți superioare sunt letale
 };

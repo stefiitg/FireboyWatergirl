@@ -12,6 +12,9 @@ private:
     Map map;
     std::unique_ptr<Character> fireboy;
     std::unique_ptr<Character> watergirl;
+    // prototipuri pentru resetări rapide prin clonare
+    std::unique_ptr<Character> fireboyPrototype;
+    std::unique_ptr<Character> watergirlPrototype;
     bool fireboyAtExit = false;
     bool watergirlAtExit = false;
     bool won = false;
@@ -31,6 +34,7 @@ private:
                           bool& reachedExitForCharacter, TileType whatExit);
     void update(float dt);
     void render();
+    void resetLevel();
 
 public:
     explicit Game(int mapW = 14, int mapH = 9);
