@@ -96,6 +96,15 @@ void Map::generateAscendingPlatforms(unsigned seed) {
     if (height > 5 && width > 2) {
         grid[5][2] = Tile(TileType::Solid, 2, 5);
     }
+
+    // Adaugă 3 monede la: (row:8,col:7), (row:8,col:8), (row:8,col:9)
+    // Funcționează pentru harta implicită 14x9; verificăm limitele pentru robustețe
+    if (height > 8) {
+        int r = 8;
+        if (width > 7) grid[r][7] = Tile(TileType::Coin, 7, r);
+        if (width > 8) grid[r][8] = Tile(TileType::Coin, 8, r);
+        if (width > 9) grid[r][9] = Tile(TileType::Coin, 9, r);
+    }
 }
 
 TileType Map::getTileTypeAtGrid(int col, int row) const {
