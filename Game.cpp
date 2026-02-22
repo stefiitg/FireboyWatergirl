@@ -144,10 +144,10 @@ void Game::handleCollisions(Character& ch, const sf::Vector2f& respawnPos,
                         // compatibilitate: oricine poate colecta monedele generice
                         canCollect = true;
                     } else if (tt == TileType::FireCoin) {
-                        auto* asFire = dynamic_cast<FireboyCharacter*>(&ch);
+                        const auto* asFire = dynamic_cast<const FireboyCharacter*>(&ch);
                         canCollect = (asFire != nullptr);
                     } else if (tt == TileType::WaterCoin) {
-                        auto* asWater = dynamic_cast<WatergirlCharacter*>(&ch);
+                        const auto* asWater = dynamic_cast<const WatergirlCharacter*>(&ch);
                         canCollect = (asWater != nullptr);
                     }
                     if (canCollect) {
