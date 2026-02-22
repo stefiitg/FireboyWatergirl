@@ -10,6 +10,8 @@ std::string toString(TileType t) {
         case TileType::HalfFire: return "HalfFire";
         case TileType::HalfWater: return "HalfWater";
         case TileType::Coin: return "Coin";
+        case TileType::FireCoin: return "FireCoin";
+        case TileType::WaterCoin: return "WaterCoin";
         case TileType::ExitFire: return "ExitFire";
         case TileType::ExitWater: return "ExitWater";
     }
@@ -47,6 +49,14 @@ Tile::Tile(TileType t, int col, int row)
         case TileType::Coin:
             // culoare orientativă; randarea reală desenează doar mijlocul jumătății superioare
             shape_.setFillColor(sf::Color(200, 200, 0));
+            break;
+        case TileType::FireCoin:
+            // orientativ
+            shape_.setFillColor(sf::Color(255, 200, 120));
+            break;
+        case TileType::WaterCoin:
+            // orientativ
+            shape_.setFillColor(sf::Color::Cyan);
             break;
         case TileType::ExitFire:
             shape_.setFillColor(sf::Color(255, 165, 0)); // Orange
@@ -86,8 +96,8 @@ void Tile::draw(sf::RenderTarget& target) const {
         return;
     }
 
-    // Coin: desenăm doar zona de monedă (mijlocul jumătății superioare) în galben
-    if (type_ == TileType::Coin) {
+    // Coin-uri: desenăm doar zona de monedă (mijlocul jumătății superioare)
+    if (type_ == TileType::Coin || type_ == TileType::FireCoin || type_ == TileType::WaterCoin) {
         const sf::Vector2f pos = shape_.getPosition();
         const sf::Vector2f size = shape_.getSize();
         const float halfH = size.y / 2.f; // jumătatea superioară
@@ -99,10 +109,25 @@ void Tile::draw(sf::RenderTarget& target) const {
 
         sf::RectangleShape coin(sf::Vector2f(coinWidth, coinHeight));
         coin.setPosition(sf::Vector2f(coinLeft, coinTop));
-        coin.setFillColor(sf::Color(255, 215, 0)); // gold
+        // culoare in functie de tip
+        if (type_ == TileType::FireCoin) {
+            // portocaliu deschis
+            coin.setFillColor(sf::Color(255, 200, 120));
+        } else if (type_ == TileType::WaterCoin) {
+            coin.setFillColor(sf::Color::Cyan);
+        } else {
+            // Coin generic (compatibilitate): auriu
+            coin.setFillColor(sf::Color(255, 215, 0));
+        }
         // opțional o margine ușoară
         coin.setOutlineThickness(1.f);
-        coin.setOutlineColor(sf::Color(160, 120, 0));
+        if (type_ == TileType::WaterCoin) {
+            coin.setOutlineColor(sf::Color(0, 120, 160));
+        } else if (type_ == TileType::FireCoin) {
+            coin.setOutlineColor(sf::Color(200, 120, 60));
+        } else {
+            coin.setOutlineColor(sf::Color(160, 120, 0));
+        }
         target.draw(coin);
         return;
     }

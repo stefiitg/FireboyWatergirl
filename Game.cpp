@@ -131,16 +131,29 @@ void Game::handleCollisions(Character& ch, const sf::Vector2f& respawnPos,
 
             // Monedă: zona activă este mijlocul jumătății superioare.
             // Nu este solidă; la atingere, moneda dispare și se contorizează.
-            if (tt == TileType::Coin) {
+            if (tt == TileType::Coin || tt == TileType::FireCoin || tt == TileType::WaterCoin) {
                 sf::FloatRect tileRect(c * Tile::getSize(), r * Tile::getSize(), Tile::getSize(), Tile::getSize());
                 const float halfH = Tile::getSize() * 0.5f;
                 const float quarterW = Tile::getSize() * 0.25f;
                 sf::FloatRect coinRect(tileRect.left + quarterW, tileRect.top,
                                        Tile::getSize() * 0.5f, halfH);
                 if (intersects(cb, coinRect)) {
-                    // colecteaza moneda o singura data
-                    collectedCoins++;
-                    map.setTileTypeAtGrid(c, r, TileType::Empty);
+                    // Colectare conditionata de tipul jucatorului (folosind downcast cu sens)
+                    bool canCollect = false;
+                    if (tt == TileType::Coin) {
+                        // compatibilitate: oricine poate colecta monedele generice
+                        canCollect = true;
+                    } else if (tt == TileType::FireCoin) {
+                        auto* asFire = dynamic_cast<FireboyCharacter*>(&ch);
+                        canCollect = (asFire != nullptr);
+                    } else if (tt == TileType::WaterCoin) {
+                        auto* asWater = dynamic_cast<WatergirlCharacter*>(&ch);
+                        canCollect = (asWater != nullptr);
+                    }
+                    if (canCollect) {
+                        collectedCoins++;
+                        map.setTileTypeAtGrid(c, r, TileType::Empty);
+                    }
                     // Recalculeaza bounds-ul daca pozitia s-a schimbat (nu se schimba aici)
                 }
             }
@@ -249,7 +262,8 @@ Game::Game(int mapW, int mapH)
     collectedCoins = 0;
     for (int rr = 0; rr < map.getHeight(); ++rr) {
         for (int cc = 0; cc < map.getWidth(); ++cc) {
-            if (map.getTileTypeAtGrid(cc, rr) == TileType::Coin) totalCoins++;
+            TileType t = map.getTileTypeAtGrid(cc, rr);
+            if (t == TileType::Coin || t == TileType::FireCoin || t == TileType::WaterCoin) totalCoins++;
         }
     }
     fireboy->setFallbackAppearance(sf::Color::Red);
@@ -299,7 +313,8 @@ void Game::resetLevel() {
     collectedCoins = 0;
     for (int rr = 0; rr < map.getHeight(); ++rr) {
         for (int cc = 0; cc < map.getWidth(); ++cc) {
-            if (map.getTileTypeAtGrid(cc, rr) == TileType::Coin) totalCoins++;
+            TileType t = map.getTileTypeAtGrid(cc, rr);
+            if (t == TileType::Coin || t == TileType::FireCoin || t == TileType::WaterCoin) totalCoins++;
         }
     }
 

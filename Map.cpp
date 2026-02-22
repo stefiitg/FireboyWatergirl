@@ -97,13 +97,16 @@ void Map::generateAscendingPlatforms(unsigned seed) {
         grid[5][2] = Tile(TileType::Solid, 2, 5);
     }
 
-    // Adaugă 3 monede la: (row:8,col:7), (row:8,col:8), (row:8,col:9)
-    // Funcționează pentru harta implicită 14x9; verificăm limitele pentru robustețe
+    // Monede specifice personajelor:
+    // Watergirl: (row:8,col:7),(8,8),(8,9)
+    // Fireboy: (row:8,col:1),(8,2)
     if (height > 8) {
         int r = 8;
-        if (width > 7) grid[r][7] = Tile(TileType::Coin, 7, r);
-        if (width > 8) grid[r][8] = Tile(TileType::Coin, 8, r);
-        if (width > 9) grid[r][9] = Tile(TileType::Coin, 9, r);
+        if (width > 7) grid[r][7] = Tile(TileType::WaterCoin, 7, r);
+        if (width > 8) grid[r][8] = Tile(TileType::WaterCoin, 8, r);
+        if (width > 9) grid[r][9] = Tile(TileType::WaterCoin, 9, r);
+        if (width > 1) grid[r][1] = Tile(TileType::FireCoin, 1, r);
+        if (width > 2) grid[r][2] = Tile(TileType::FireCoin, 2, r);
     }
 }
 
