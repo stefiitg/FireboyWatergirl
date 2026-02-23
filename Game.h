@@ -13,11 +13,14 @@ private:
     Map map;
     std::unique_ptr<Character> fireboy;
     std::unique_ptr<Character> watergirl;
+    std::unique_ptr<Character> earthboy;
     // prototipuri pentru resetări rapide prin clonare
     std::unique_ptr<Character> fireboyPrototype;
     std::unique_ptr<Character> watergirlPrototype;
+    std::unique_ptr<Character> earthboyPrototype;
     bool fireboyAtExit = false;
     bool watergirlAtExit = false;
+    bool earthboyAtExit = false;
     bool won = false;
     bool gameOver = false; // Joc pierdut cand un personaj atinge elementul opus
     // Progres monede
@@ -50,10 +53,13 @@ public:
         swap(map, other.map);
         swap(fireboy, other.fireboy);
         swap(watergirl, other.watergirl);
+        swap(earthboy, other.earthboy);
         swap(fireboyPrototype, other.fireboyPrototype);
         swap(watergirlPrototype, other.watergirlPrototype);
+        swap(earthboyPrototype, other.earthboyPrototype);
         swap(fireboyAtExit, other.fireboyAtExit);
         swap(watergirlAtExit, other.watergirlAtExit);
+        swap(earthboyAtExit, other.earthboyAtExit);
         swap(won, other.won);
         swap(gameOver, other.gameOver);
         swap(totalCoins, other.totalCoins);

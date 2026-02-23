@@ -37,6 +37,7 @@ public:
 
     sf::Vector2f respawnWorldPosForFire() const;
     sf::Vector2f respawnWorldPosForWater() const;
+    sf::Vector2f respawnWorldPosForEarth() const;
 };
 
 #endif // OOP_MAP_H

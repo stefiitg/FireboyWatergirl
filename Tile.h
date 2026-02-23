@@ -5,7 +5,7 @@
 #include <ostream>
 #include <string>
 
-enum class TileType { Empty, Solid, Fire, Water, HalfFire, HalfWater, Coin, FireCoin, WaterCoin, ExitFire, ExitWater };
+enum class TileType { Empty, Solid, Fire, Water, HalfFire, HalfWater, Coin, FireCoin, WaterCoin, ExitFire, ExitWater, ExitEarth };
 
 // Add toString declaration
 std::string toString(TileType t);

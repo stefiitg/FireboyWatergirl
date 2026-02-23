@@ -173,4 +173,25 @@ public:
     // ambele jumătăți superioare sunt letale
 };
 
+// Earthboy: personaj neutru cu exit dedicat verde
+class EarthboyCharacter : public Character {
+public:
+    EarthboyCharacter(const std::string& nm,
+                      const std::string& texturePath,
+                      const sf::Vector2f& pos = {0.f, 0.f},
+                      int lifeCount = 3,
+                      const sf::Color& fallbackColor = sf::Color::Green)
+        : Character(nm, texturePath, pos, lifeCount, fallbackColor) {}
+    Element element() const override { return Element::Neutral; }
+    std::unique_ptr<Character> clone() const override {
+        return std::make_unique<EarthboyCharacter>(*this);
+    }
+    void print(std::ostream& os) const override {
+        Character::print(os);
+        os << " element=Neutral(Earth)";
+    }
+    // Comportament neutru: doar Solid e suport, lichidele omoară (moștenit)
+    bool canExitThrough(TileType tt) const override { return tt == TileType::ExitEarth; }
+};
+
 #endif // OOP_CHARACTER_H

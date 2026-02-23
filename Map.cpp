@@ -90,6 +90,12 @@ void Map::generateAscendingPlatforms(unsigned seed) {
         grid[2][width-2] = Tile(TileType::Solid, width-2, 2);
     }
     grid[1][1] = Tile(TileType::ExitWater, 1, 1);
+    // Exit verde pentru Earthboy la (col=1, row=2)
+    if (height > 2 && width > 1) {
+        grid[2][1] = Tile(TileType::ExitEarth, 1, 2);
+        // suport sub el daca e nevoie
+        if (height > 3) grid[3][1] = Tile(TileType::Solid, 1, 3);
+    }
     if (height > 3) {
         grid[3][1] = Tile(TileType::Solid, 1, 3);
     }
@@ -153,4 +159,9 @@ sf::Vector2f Map::respawnWorldPosForFire() const {
 
 sf::Vector2f Map::respawnWorldPosForWater() const {
     return sf::Vector2f(Tile::getSize() * 5.f, Tile::getSize() * (height - 2));
+}
+
+sf::Vector2f Map::respawnWorldPosForEarth() const {
+    // plasam earthboy intre ceilalti doi, de ex. la col 3
+    return sf::Vector2f(Tile::getSize() * 3.f, Tile::getSize() * (height - 2));
 }

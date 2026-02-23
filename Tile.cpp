@@ -14,6 +14,7 @@ std::string toString(TileType t) {
         case TileType::WaterCoin: return "WaterCoin";
         case TileType::ExitFire: return "ExitFire";
         case TileType::ExitWater: return "ExitWater";
+        case TileType::ExitEarth: return "ExitEarth";
     }
     return "Unknown";
 }
@@ -63,6 +64,9 @@ Tile::Tile(TileType t, int col, int row)
             break;
         case TileType::ExitWater:
             shape_.setFillColor(sf::Color::Cyan);
+            break;
+        case TileType::ExitEarth:
+            shape_.setFillColor(sf::Color::Green);
             break;
     }
 }
