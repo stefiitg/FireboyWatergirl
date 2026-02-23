@@ -281,7 +281,7 @@ Game::Game(int mapW, int mapH)
     watergirl->setFallbackAppearance(sf::Color::Blue);
     // Creeaza Earthboy
     earthboy = std::make_unique<EarthboyCharacter>(
-        "Earthboy", "",
+        "Earthboy", "assets/earthboy.png",
         sf::Vector2f{static_cast<float>(Tile::getSize()) * 3.f,
                      static_cast<float>(Tile::getSize()) * (mapH - 2.f)},
         3, sf::Color::Green);
