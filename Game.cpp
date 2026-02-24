@@ -192,12 +192,6 @@ void Game::update(float dt) {
     watergirl->update(dt, world);
     earthboy->update(dt, world);
 
-    // Per-frame exit flags must reflect only the current frame state
-    // Reset them before handling collisions for any character
-    fireboyAtExit = false;
-    watergirlAtExit = false;
-    earthboyAtExit = false;
-
     handleCollisions(*fireboy, map.respawnWorldPosForFire(), fireboyAtExit, TileType::ExitFire);
     handleCollisions(*watergirl, map.respawnWorldPosForWater(), watergirlAtExit, TileType::ExitWater);
     handleCollisions(*earthboy, map.respawnWorldPosForEarth(), earthboyAtExit, TileType::ExitEarth);
@@ -250,7 +244,7 @@ void Game::render() {
             window->draw(loseText);
         } else {
             window->setTitle("TRY AGAIN!");
-        }//.
+        }
     }
     window->display();
 }
