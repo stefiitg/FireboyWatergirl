@@ -6,7 +6,7 @@
 namespace {
     inline bool intersects(const sf::FloatRect& a, const sf::FloatRect& b) {
         return a.intersects(b);
-    }
+    }//..
 }
 
 // Constructor de copiere: copiere profunda pentru pointerii polimorfici si reconstruirea ferestrei
