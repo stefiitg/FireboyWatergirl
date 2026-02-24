@@ -284,7 +284,7 @@ Game::Game(int mapW, int mapH)
     if (!watergirl->isUsingTexture()) {
         throw ResourceLoadError("Failed to load mandatory asset: assets/watergirl.jpg");
     }
-    // Earthboy is optional texture-wise; keep fallback if missing but set appearance color
+    // Seteaza culoarea de fallback pentru consistenta vizuala
     fireboy->setFallbackAppearance(sf::Color::Red);
     watergirl->setFallbackAppearance(sf::Color::Blue);
     // Creeaza Earthboy
@@ -294,6 +294,11 @@ Game::Game(int mapW, int mapH)
                      static_cast<float>(Tile::getSize()) * (mapH - 2.f)},
         3, sf::Color::Green);
     earthboy->setFallbackAppearance(sf::Color::Green);
+
+    // Option A (recommended): Tratare Earthboy ca avand textura obligatorie
+    if (!earthboy->isUsingTexture()) {
+        throw ResourceLoadError("Failed to load mandatory asset: assets/earthboy.png");
+    }
 
     // Salveaza prototipurile initiale (pentru resetare prin clone)
     fireboyPrototype = fireboy->clone();
