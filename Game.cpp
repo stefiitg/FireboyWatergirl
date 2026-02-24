@@ -394,6 +394,8 @@ void Game::run() {
                 window->close();
         }
         float dt = clock.restart().asSeconds();
+        // Clamp dt to avoid large spikes (e.g., when dragging the window) that can cause physics tunneling
+        if (dt > 0.05f) dt = 0.05f;
         processInput(dt);
         update(dt);
         render();
