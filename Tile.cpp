@@ -12,6 +12,7 @@ std::string toString(TileType t) {
         case TileType::Coin: return "Coin";
         case TileType::FireCoin: return "FireCoin";
         case TileType::WaterCoin: return "WaterCoin";
+        case TileType::EarthCoin: return "EarthCoin";
         case TileType::ExitFire: return "ExitFire";
         case TileType::ExitWater: return "ExitWater";
         case TileType::ExitEarth: return "ExitEarth";
@@ -59,6 +60,10 @@ Tile::Tile(TileType t, int col, int row)
             // orientativ
             shape_.setFillColor(sf::Color::Cyan);
             break;
+        case TileType::EarthCoin:
+            // orientativ
+            shape_.setFillColor(sf::Color::Green);
+            break;
         case TileType::ExitFire:
             shape_.setFillColor(sf::Color(255, 165, 0)); // Orange
             break;
@@ -101,7 +106,7 @@ void Tile::draw(sf::RenderTarget& target) const {
     }
 
     // Coin-uri: desenăm doar zona de monedă (mijlocul jumătății superioare)
-    if (type_ == TileType::Coin || type_ == TileType::FireCoin || type_ == TileType::WaterCoin) {
+    if (type_ == TileType::Coin || type_ == TileType::FireCoin || type_ == TileType::WaterCoin || type_ == TileType::EarthCoin) {
         const sf::Vector2f pos = shape_.getPosition();
         const sf::Vector2f size = shape_.getSize();
         const float halfH = size.y / 2.f; // jumătatea superioară
@@ -119,6 +124,8 @@ void Tile::draw(sf::RenderTarget& target) const {
             coin.setFillColor(sf::Color(255, 200, 120));
         } else if (type_ == TileType::WaterCoin) {
             coin.setFillColor(sf::Color::Cyan);
+        } else if (type_ == TileType::EarthCoin) {
+            coin.setFillColor(sf::Color::Green);
         } else {
             // Coin generic (compatibilitate): auriu
             coin.setFillColor(sf::Color(255, 215, 0));
@@ -129,6 +136,8 @@ void Tile::draw(sf::RenderTarget& target) const {
             coin.setOutlineColor(sf::Color(0, 120, 160));
         } else if (type_ == TileType::FireCoin) {
             coin.setOutlineColor(sf::Color(200, 120, 60));
+        } else if (type_ == TileType::EarthCoin) {
+            coin.setOutlineColor(sf::Color(0, 100, 0));
         } else {
             coin.setOutlineColor(sf::Color(160, 120, 0));
         }

@@ -140,7 +140,7 @@ void Game::handleCollisions(Character& ch, const sf::Vector2f& respawnPos,
 
             // Monedă: zona activă este mijlocul jumătății superioare.
             // Nu este solidă; la atingere, moneda dispare și se contorizează.
-            if (tt == TileType::Coin || tt == TileType::FireCoin || tt == TileType::WaterCoin) {
+            if (tt == TileType::Coin || tt == TileType::FireCoin || tt == TileType::WaterCoin || tt == TileType::EarthCoin) {
                 sf::FloatRect tileRect(c * Tile::getSize(), r * Tile::getSize(), Tile::getSize(), Tile::getSize());
                 const float halfH = Tile::getSize() * 0.5f;
                 const float quarterW = Tile::getSize() * 0.25f;
@@ -158,6 +158,9 @@ void Game::handleCollisions(Character& ch, const sf::Vector2f& respawnPos,
                     } else if (tt == TileType::WaterCoin) {
                         const auto* asWater = dynamic_cast<const WatergirlCharacter*>(&ch);
                         canCollect = (asWater != nullptr);
+                    } else if (tt == TileType::EarthCoin) {
+                        const auto* asEarth = dynamic_cast<const EarthboyCharacter*>(&ch);
+                        canCollect = (asEarth != nullptr);
                     }
                     if (canCollect) {
                         collectedCoins++;
@@ -274,7 +277,7 @@ Game::Game(int mapW, int mapH)
     for (int rr = 0; rr < map.getHeight(); ++rr) {
         for (int cc = 0; cc < map.getWidth(); ++cc) {
             TileType t = map.getTileTypeAtGrid(cc, rr);
-            if (t == TileType::Coin || t == TileType::FireCoin || t == TileType::WaterCoin) totalCoins++;
+            if (t == TileType::Coin || t == TileType::FireCoin || t == TileType::WaterCoin || t == TileType::EarthCoin) totalCoins++;
         }
     }
     // Verifica incarcarea texturilor obligatorii pentru personaje; daca lipsesc, arunca exceptie
@@ -346,7 +349,7 @@ void Game::resetLevel() {
     for (int rr = 0; rr < map.getHeight(); ++rr) {
         for (int cc = 0; cc < map.getWidth(); ++cc) {
             TileType t = map.getTileTypeAtGrid(cc, rr);
-            if (t == TileType::Coin || t == TileType::FireCoin || t == TileType::WaterCoin) totalCoins++;
+            if (t == TileType::Coin || t == TileType::FireCoin || t == TileType::WaterCoin || t == TileType::EarthCoin) totalCoins++;
         }
     }
 

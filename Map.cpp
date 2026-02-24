@@ -118,6 +118,18 @@ void Map::generateAscendingPlatforms(unsigned seed) {
         if (width > 1) grid[r][1] = Tile(TileType::FireCoin, 1, r);
         if (width > 2) grid[r][2] = Tile(TileType::FireCoin, 2, r);
     }
+
+    // Earthboy coins: place exactly 3 at (row,col): (5,7), (4,9), (3,11)
+    // Ensure indices are in range for current map size
+    if (height > 5 && width > 7) {
+        grid[5][7] = Tile(TileType::EarthCoin, 7, 5);
+    }
+    if (height > 4 && width > 9) {
+        grid[4][9] = Tile(TileType::EarthCoin, 9, 4);
+    }
+    if (height > 3 && width > 11) {
+        grid[3][11] = Tile(TileType::EarthCoin, 11, 3);
+    }
 }
 
 TileType Map::getTileTypeAtGrid(int col, int row) const {
