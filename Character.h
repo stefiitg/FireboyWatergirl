@@ -155,26 +155,7 @@ public:
     bool isTopHalfDeadly(TileType tt) const override { return tt == TileType::HalfFire; }
 };
 
-class RockCharacter : public Character {
-public:
-    // Constructor explicit care apelează constructorul bazei în lista de inițializare
-    RockCharacter(const std::string& nm,
-                  const std::string& texturePath,
-                  const sf::Vector2f& pos = {0.f, 0.f},
-                  int lifeCount = 3,
-                  const sf::Color& fallbackColor = sf::Color::White)
-        : Character(nm, texturePath, pos, lifeCount, fallbackColor) {}
-    Element element() const override { return Element::Neutral; }
-    std::unique_ptr<Character> clone() const override {
-        return std::make_unique<RockCharacter>(*this);
-    }
-    void print(std::ostream& os) const override {
-        Character::print(os);
-        os << " element=Neutral";
-    }
-    // pentru rock: doar Solid e suport, ambele lichide sunt letale, nu are exit dedicat,
-    // ambele jumătăți superioare sunt letale
-};
+
 
 // Earthboy: personaj neutru cu exit dedicat verde
 class EarthboyCharacter : public Character {
