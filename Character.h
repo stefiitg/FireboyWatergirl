@@ -88,6 +88,9 @@ public:
     void setFallbackAppearance(const sf::Color& c);
     void stopVerticalMovement();
 
+    // Indica daca textura s-a incarcat (pentru a valida resursele obligatorii)
+    bool isUsingTexture() const { return usingTexture; }
+
     // Afișare virtuală: operator<< va apela această metodă
     virtual void print(std::ostream& os) const;
 

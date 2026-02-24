@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "GameExceptions.h"
 #include <iostream>
 #include <utility>
 
@@ -263,8 +264,7 @@ Game::Game(int mapW, int mapH)
           3, sf::Color::Blue))
 {
     if (!window->isOpen()) {
-        std::cerr << "Error: failed to create SFML window. Ensure a display is available and SFML is configured correctly.\n";
-        std::exit(EXIT_FAILURE);
+        throw WindowCreationError("Failed to create SFML window. Ensure a display is available and SFML is configured correctly.");
     }
 
     map.generateAscendingPlatforms(12345);
@@ -277,6 +277,14 @@ Game::Game(int mapW, int mapH)
             if (t == TileType::Coin || t == TileType::FireCoin || t == TileType::WaterCoin) totalCoins++;
         }
     }
+    // Verifica incarcarea texturilor obligatorii pentru personaje; daca lipsesc, arunca exceptie
+    if (!fireboy->isUsingTexture()) {
+        throw ResourceLoadError("Failed to load mandatory asset: assets/fireboy.jpeg");
+    }
+    if (!watergirl->isUsingTexture()) {
+        throw ResourceLoadError("Failed to load mandatory asset: assets/watergirl.jpg");
+    }
+    // Earthboy is optional texture-wise; keep fallback if missing but set appearance color
     fireboy->setFallbackAppearance(sf::Color::Red);
     watergirl->setFallbackAppearance(sf::Color::Blue);
     // Creeaza Earthboy

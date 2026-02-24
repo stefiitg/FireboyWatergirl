@@ -1,4 +1,5 @@
 #include "Map.h"
+#include "GameExceptions.h"
 #include <algorithm>
 
 void Map::allocateGrid(int w, int h, TileType defaultType) {
@@ -10,6 +11,9 @@ void Map::allocateGrid(int w, int h, TileType defaultType) {
 }
 
 Map::Map(int w, int h, TileType defaultType) {
+    if (w <= 0 || h <= 0) {
+        throw InvalidMapError("Map dimensions must be positive");
+    }
     allocateGrid(w,h,defaultType);
 }
 
