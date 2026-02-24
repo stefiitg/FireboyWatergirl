@@ -250,7 +250,7 @@ void Game::render() {
             window->draw(loseText);
         } else {
             window->setTitle("TRY AGAIN!");
-        }
+        }//.
     }
     window->display();
 }
