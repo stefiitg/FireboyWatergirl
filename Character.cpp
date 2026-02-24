@@ -101,6 +101,7 @@ void Character::setPosition(const sf::Vector2f& p) {
 }
 
 bool Character::update(float dt, const sf::FloatRect& worldBounds) {
+
     const float maxStep = 0.02f;
     float remaining = dt;
     while (remaining > 0.f) {
