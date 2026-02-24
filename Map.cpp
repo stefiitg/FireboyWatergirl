@@ -93,15 +93,20 @@ void Map::generateAscendingPlatforms(unsigned seed) {
     if (height > 2) {
         grid[2][width-2] = Tile(TileType::Solid, width-2, 2);
     }
-    grid[1][1] = Tile(TileType::ExitWater, 1, 1);
-    // Exit verde pentru Earthboy la (col=1, row=2)
+    // Muta iesirea Watergirl la (row=2, col=1)
     if (height > 2 && width > 1) {
-        grid[2][1] = Tile(TileType::ExitEarth, 1, 2);
-        // suport sub el daca e nevoie
-        if (height > 3) grid[3][1] = Tile(TileType::Solid, 1, 3);
+        grid[2][1] = Tile(TileType::ExitWater, 1, 2);
     }
+    // Muta iesirea Earthboy la (row=2, col=4)
+    if (height > 2 && width > 4) {
+        grid[2][4] = Tile(TileType::ExitEarth, 4, 2);
+    }
+    // Pastreaza suportul existent sub (1,3) si adauga unul nou sub (4,3)
     if (height > 3) {
         grid[3][1] = Tile(TileType::Solid, 1, 3);
+        if (width > 4) {
+            grid[3][4] = Tile(TileType::Solid, 4, 3);
+        }
     }
     if (height > 5 && width > 2) {
         grid[5][2] = Tile(TileType::Solid, 2, 5);
