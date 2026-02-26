@@ -24,6 +24,17 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Tile& t);
 
 private:
+    // Static textures for exit tiles (loaded once on demand)
+    static sf::Texture exitFireTex;
+    static sf::Texture exitWaterTex;
+    static sf::Texture exitEarthTex;
+    static bool exitTexturesLoaded;      // guard to attempt loading only once
+    static bool exitFireLoaded;          // individual success flags
+    static bool exitWaterLoaded;
+    static bool exitEarthLoaded;
+
+    static void ensureExitTexturesLoaded();
+
     TileType type_ = TileType::Empty;
     [[maybe_unused]] int col_ = 0;
     [[maybe_unused]] int row_ = 0;

@@ -1,6 +1,25 @@
 
 #include "Tile.h"
 
+// Static member definitions for exit textures and flags
+sf::Texture Tile::exitFireTex;
+sf::Texture Tile::exitWaterTex;
+sf::Texture Tile::exitEarthTex;
+bool Tile::exitTexturesLoaded = false;
+bool Tile::exitFireLoaded = false;
+bool Tile::exitWaterLoaded = false;
+bool Tile::exitEarthLoaded = false;
+
+void Tile::ensureExitTexturesLoaded() {
+    if (exitTexturesLoaded) return;
+    // Attempt to load each texture independently; keep flags per texture
+    // Do not throw if loading fails; exits will fallback to colored rectangles
+    exitFireLoaded = exitFireTex.loadFromFile("assets/exit_fireboy.png");
+    exitWaterLoaded = exitWaterTex.loadFromFile("assets/exit_watergirl.png");
+    exitEarthLoaded = exitEarthTex.loadFromFile("assets/exit_earthboy.png");
+    exitTexturesLoaded = true;
+}
+
 std::string toString(TileType t) {
     switch (t) {
         case TileType::Empty: return "Empty";
@@ -79,6 +98,31 @@ Tile::Tile(TileType t, int col, int row)
 void Tile::draw(sf::RenderTarget& target) const {
     // Nu desenăm nimic pentru plăcile Empty
     if (type_ == TileType::Empty) return;
+
+    // Exit tiles: prefer textured rendering with graceful fallback
+    if (type_ == TileType::ExitFire || type_ == TileType::ExitWater || type_ == TileType::ExitEarth) {
+        ensureExitTexturesLoaded();
+
+        const sf::Texture* tex = nullptr;
+        bool ok = false;
+        switch (type_) {
+            case TileType::ExitFire:  tex = &exitFireTex;  ok = exitFireLoaded;  break;
+            case TileType::ExitWater: tex = &exitWaterTex; ok = exitWaterLoaded; break;
+            case TileType::ExitEarth: tex = &exitEarthTex; ok = exitEarthLoaded; break;
+            default: break;
+        }
+
+        if (ok && tex && tex->getSize().y > 0) {
+            sf::Sprite sprite;
+            sprite.setTexture(*tex);
+            float factor = Tile::getSize() / static_cast<float>(tex->getSize().y);
+            sprite.setScale(factor, factor);
+            sprite.setPosition(shape_.getPosition());
+            target.draw(sprite);
+            return; // done drawing the exit tile with texture
+        }
+        // If texture missing or invalid, fall through to existing rectangle drawing
+    }
 
     // Pentru Fire/Water și HalfFire/HalfWater, desenăm două jumătăți:
     //  - jumătatea superioară: culoarea actuală (roșu/albastru)
