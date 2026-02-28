@@ -256,12 +256,12 @@ Game::Game(int mapW, int mapH)
           "Fireboy & Watergirl")),
       map(mapW, mapH),
       fireboy(std::make_unique<FireboyCharacter>(
-          "Fireboy", "assets/fireboy.jpeg",
+          "Fireboy", "assets/fireboy1.png",
           sf::Vector2f{static_cast<float>(Tile::getSize()) * 1.f,
                        static_cast<float>(Tile::getSize()) * (mapH - 2.f)},
           3, sf::Color::Red)),
       watergirl(std::make_unique<WatergirlCharacter>(
-          "Watergirl", "assets/watergirl.jpg",
+          "Watergirl", "assets/watergirl1.png",
           sf::Vector2f{static_cast<float>(Tile::getSize()) * 5.f,
                        static_cast<float>(Tile::getSize()) * (mapH - 2.f)},
           3, sf::Color::Blue))
@@ -282,10 +282,10 @@ Game::Game(int mapW, int mapH)
     }
     // Verifica incarcarea texturilor obligatorii pentru personaje; daca lipsesc, arunca exceptie
     if (!fireboy->isUsingTexture()) {
-        throw ResourceLoadError("Failed to load mandatory asset: assets/fireboy.jpeg");
+        throw ResourceLoadError("Failed to load mandatory asset: assets/fireboy1.png");
     }
     if (!watergirl->isUsingTexture()) {
-        throw ResourceLoadError("Failed to load mandatory asset: assets/watergirl.jpg");
+        throw ResourceLoadError("Failed to load mandatory asset: assets/watergirl1.png");
     }
     // Seteaza culoarea de fallback pentru consistenta vizuala
     fireboy->setFallbackAppearance(sf::Color::Red);
