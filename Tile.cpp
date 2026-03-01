@@ -1,7 +1,21 @@
 
 #include "Tile.h"
 
+// File-scope cached texture for HalfWater tile (loaded once on demand)
+static sf::Texture g_halfWaterTex;
+static bool g_halfWaterTexTried = false;
+static bool g_halfWaterTexOk = false;
+
+// File-scope cached texture for HalfFire tile (loaded once on demand)
+static sf::Texture g_halfFireTex;
+static bool g_halfFireTexTried = false;
+static bool g_halfFireTexOk = false;
+
 // Static member definitions for exit textures and flags
+sf::Texture Tile::solidTex;
+bool Tile::solidTexLoaded = false;
+bool Tile::solidTexOk = false;
+
 sf::Texture Tile::exitFireTex;
 sf::Texture Tile::exitWaterTex;
 sf::Texture Tile::exitEarthTex;
@@ -18,6 +32,12 @@ void Tile::ensureExitTexturesLoaded() {
     exitWaterLoaded = exitWaterTex.loadFromFile("assets/exit_watergirl.png");
     exitEarthLoaded = exitEarthTex.loadFromFile("assets/exit_earthboy.png");
     exitTexturesLoaded = true;
+}
+
+void Tile::ensureSolidTextureLoaded() {
+    if (solidTexLoaded) return;
+    solidTexLoaded = true;
+    solidTexOk = solidTex.loadFromFile("assets/solid.png");
 }
 
 std::string toString(TileType t) {
@@ -98,6 +118,71 @@ Tile::Tile(TileType t, int col, int row)
 void Tile::draw(sf::RenderTarget& target) const {
     // Nu desenăm nimic pentru plăcile Empty
     if (type_ == TileType::Empty) return;
+
+    // Textured rendering for Solid tiles with graceful fallback
+    if (type_ == TileType::Solid) {
+        ensureSolidTextureLoaded();
+        if (solidTexOk) {
+            sf::Sprite s;
+            s.setTexture(solidTex);
+            s.setPosition(shape_.getPosition());
+            const auto texSize = solidTex.getSize();
+            if (texSize.x > 0 && texSize.y > 0) {
+                const float scaleX = Tile::getSize() / static_cast<float>(texSize.x);
+                const float scaleY = Tile::getSize() / static_cast<float>(texSize.y);
+                s.setScale(scaleX, scaleY);
+            }
+            target.draw(s);
+            return; // textured Solid drawn
+        }
+        // if texture failed to load, fall through to existing gray rectangle drawing at the end
+    }
+
+    // Special handling for HalfWater: try to render with texture if available
+    if (type_ == TileType::HalfWater) {
+        if (!g_halfWaterTexTried) {
+            g_halfWaterTexTried = true;
+            g_halfWaterTexOk = g_halfWaterTex.loadFromFile("assets/half_water.png");
+        }
+
+        if (g_halfWaterTexOk) {
+            sf::Sprite s;
+            s.setTexture(g_halfWaterTex);
+            s.setPosition(shape_.getPosition());
+            const auto texSize = g_halfWaterTex.getSize();
+            if (texSize.x > 0 && texSize.y > 0) {
+                const float scaleX = Tile::getSize() / static_cast<float>(texSize.x);
+                const float scaleY = Tile::getSize() / static_cast<float>(texSize.y);
+                s.setScale(scaleX, scaleY);
+            }
+            target.draw(s);
+            return; // textured HalfWater drawn
+        }
+        // if texture failed, fall through to existing old HalfWater drawing code below
+    }
+
+    // Special handling for HalfFire: render with texture if available; fallback to old drawing
+    if (type_ == TileType::HalfFire) {
+        if (!g_halfFireTexTried) {
+            g_halfFireTexTried = true;
+            g_halfFireTexOk = g_halfFireTex.loadFromFile("assets/half_fire.png");
+        }
+
+        if (g_halfFireTexOk) {
+            sf::Sprite s;
+            s.setTexture(g_halfFireTex);
+            s.setPosition(shape_.getPosition());
+            const auto texSize = g_halfFireTex.getSize();
+            if (texSize.x > 0 && texSize.y > 0) {
+                const float scaleX = Tile::getSize() / static_cast<float>(texSize.x);
+                const float scaleY = Tile::getSize() / static_cast<float>(texSize.y);
+                s.setScale(scaleX, scaleY);
+            }
+            target.draw(s);
+            return; // textured HalfFire drawn as a full tile
+        }
+        // if texture failed, fall through to existing old HalfFire drawing code below
+    }
 
     // Exit tiles: prefer textured rendering with graceful fallback
     if (type_ == TileType::ExitFire || type_ == TileType::ExitWater || type_ == TileType::ExitEarth) {
