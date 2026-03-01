@@ -8,7 +8,7 @@
 #include <ostream>
 #include "Tile.h"
 
-
+// element affinity used for gameplay rules
 enum class Element { Fire, Water, Neutral };
 
 class Character {
@@ -18,13 +18,13 @@ private:
     sf::Sprite sprite;
     sf::RectangleShape fallbackShape;
     bool usingTexture{};
-    sf::Vector2f position{};
+    sf::Vector2f position{}; // world coordinates (top-left)
     sf::Vector2f velocity{};
     int lives{0};
     bool onGround{false};
 
-    float speed = 160.f;
-    float jumpImpulse = 360.f;
+    float speed = 160.f; // px/s
+    float jumpImpulse = 360.f; // initial jump velocity
     static constexpr float GRAVITY = 900.f;
 
     void initFallbackShape(const sf::Color& c, const sf::Vector2f& size);
@@ -35,7 +35,7 @@ public:
               const sf::Color& fallbackColor = sf::Color::White);
     virtual ~Character();
 
-
+    // polymorphic attribute specific to the theme (used for gameplay rules)
     virtual Element element() const = 0;
 
     // "Constructor" virtual (clone) pentru copiere polimorfă

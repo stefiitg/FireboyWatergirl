@@ -297,17 +297,18 @@ Game::Game(int mapW, int mapH)
         3, sf::Color::Green);
     earthboy->setFallbackAppearance(sf::Color::Green);
 
-
+    // Option A (recommended): Tratare Earthboy ca avand textura obligatorie
     if (!earthboy->isUsingTexture()) {
         throw ResourceLoadError("Failed to load mandatory asset: assets/earthboy.png");
     }
 
-
+    // Salveaza prototipurile initiale (pentru resetare prin clone)
     fireboyPrototype = fireboy->clone();
     watergirlPrototype = watergirl->clone();
     earthboyPrototype = earthboy->clone();
 
-
+    // Incarca font pentru mesajul de castig
+    // Incercam fonturi uzuale din Windows
     const char* candidates[] = {
         "C:\\Windows\\Fonts\\arial.ttf",
         "C:\\Windows\\Fonts\\segoeui.ttf",
@@ -320,13 +321,14 @@ Game::Game(int mapW, int mapH)
     if (winFontLoaded) {
         winText.setFont(winFont);
         winText.setString("WIN");
-
+        // Dimensiunea textului proportional cu inaltimea ferestrei
         unsigned int size = static_cast<unsigned int>(std::max(30.f, (window->getSize().y * 0.2f)));
         winText.setCharacterSize(size);
         winText.setFillColor(sf::Color::Yellow);
         winText.setOutlineThickness(4.f);
         winText.setOutlineColor(sf::Color::Black);
-
+        // Pozitia exacta va fi recalculata in render() pentru a ramane centrata
+        // Configureaza si textul pentru ecranul de pierdere
         loseText.setFont(winFont);
         loseText.setString("TRY AGAIN!");
         loseText.setCharacterSize(size);
@@ -339,7 +341,7 @@ Game::Game(int mapW, int mapH)
 }
 
 void Game::resetLevel() {
-
+    // Regenerare harta si resetare monede
     map.generateAscendingPlatforms(12345);
     totalCoins = 0;
     collectedCoins = 0;
@@ -350,22 +352,22 @@ void Game::resetLevel() {
         }
     }
 
-    // personajele din prototipuri
+    // Recreeaza personajele din prototipuri
     if (fireboyPrototype) fireboy = fireboyPrototype->clone();
     if (watergirlPrototype) watergirl = watergirlPrototype->clone();
     if (earthboyPrototype) earthboy = earthboyPrototype->clone();
 
-
+    // Reseteaza pozitiile la punctele de respawn
     fireboy->setPosition(map.respawnWorldPosForFire());
     watergirl->setPosition(map.respawnWorldPosForWater());
     earthboy->setPosition(map.respawnWorldPosForEarth());
 
-
+    // Reaplica fallback appearance (in cazul build-urilor fara texturi)
     fireboy->setFallbackAppearance(sf::Color::Red);
     watergirl->setFallbackAppearance(sf::Color::Blue);
     earthboy->setFallbackAppearance(sf::Color::Green);
 
-
+    // Reset flags
     won = false;
     gameOver = false;
     fireboyAtExit = false;
