@@ -7,7 +7,7 @@
 
 enum class TileType { Empty, Solid, Fire, Water, HalfFire, HalfWater, Coin, FireCoin, WaterCoin, EarthCoin, ExitFire, ExitWater, ExitEarth };
 
-// Add toString declaration
+//add to string
 std::string toString(TileType t);
 
 class Tile {
