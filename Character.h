@@ -8,7 +8,7 @@
 #include <ostream>
 #include "Tile.h"
 
-// element affinity used for gameplay rules
+
 enum class Element { Fire, Water, Neutral };
 
 class Character {
@@ -18,13 +18,13 @@ private:
     sf::Sprite sprite;
     sf::RectangleShape fallbackShape;
     bool usingTexture{};
-    sf::Vector2f position{}; // world coordinates (top-left)
+    sf::Vector2f position{}; // coord globale (top-left)
     sf::Vector2f velocity{};
     int lives{0};
     bool onGround{false};
 
     float speed = 160.f; // px/s
-    float jumpImpulse = 360.f; // initial jump velocity
+    float jumpImpulse = 360.f;
     static constexpr float GRAVITY = 900.f;
 
     void initFallbackShape(const sf::Color& c, const sf::Vector2f& size);
@@ -35,51 +35,51 @@ public:
               const sf::Color& fallbackColor = sf::Color::White);
     virtual ~Character();
 
-    // polymorphic attribute specific to the theme (used for gameplay rules)
+    // atribut polimorfic
     virtual Element element() const = 0;
 
-    // "Constructor" virtual (clone) pentru copiere polimorfă
+    // constructor virtual pentru copiere polimorfa
     virtual std::unique_ptr<Character> clone() const = 0;
 
-    // Interacțiuni polimorfice cu tile-urile (evită if-uri pe tipuri în Game)
-    // Implicit, un personaj neutru: doar Solid este solid, Fire/Water sunt letale,
-    // niciun exit nu este potrivit; Half-tiles partea de sus este letală pentru ambele.
+    // interacțiuni polimorfice cu tile urile (evita if uri pe tipuri in game)
+    // implicit , un personaj neutru : doar Solid e solid, fire/water sunt letale
+    // by default niciun exit nu este potrivit, la half tiles partea de sus este letala pentru ambele
     virtual bool isSolidOn(TileType tt) const {
-        return tt == TileType::Solid; // implicit doar Solid este suport
+        return tt == TileType::Solid;
     }
     virtual bool isDeadlyOn(TileType tt) const {
         return tt == TileType::Fire || tt == TileType::Water; // implicit ambele omoară
     }
-    // nu folosim parametrul in implementarea de baza; omitem numele pentru a evita -Werror=unused-parameter
+
     virtual bool canExitThrough(TileType) const { return false; }
     virtual bool isTopHalfDeadly(TileType tt) const {
         return tt == TileType::HalfFire || tt == TileType::HalfWater;
     }
 
-    // rule of 3 (explicit copy ops for the exercise)
+    // rule of 3
     Character(const Character& other);
-    // Nota: Clasa este abstractă; semnătura by-value (copy-and-swap canonic) nu este permisă.
-    // Folosim o variantă clasică prin const&.
+    // clasa este abstracta
+    // folosim o variantă clasică prin const&
     Character& operator=(const Character& other);
 
-    // swap helper for copy-and-swap
+
     void swap(Character& other) noexcept;
 
-    // state helpers
+
     void setOnGround(bool state);
 
-    // getters (pot fi neutilizate în unele build-uri CI)
+    // getters -pot fi neutilizati in unele build-uri )
     [[maybe_unused]] const std::string& getName() const { return name; }
     [[maybe_unused]] int getLives() const { return lives; }
     [[maybe_unused]] sf::Vector2f getPosition() const { return position; }
 
-    // expose bounds for collision checks
+
     sf::FloatRect bounds() const;
 
-    // position
+
     void setPosition(const sf::Vector2f& p);
 
-    // behavior
+    // comportament
     bool update(float dt, const sf::FloatRect& worldBounds);
     void moveLeft(float dt);
     void moveRight(float dt);
@@ -88,10 +88,10 @@ public:
     void setFallbackAppearance(const sf::Color& c);
     void stopVerticalMovement();
 
-    // Indica daca textura s-a incarcat (pentru a valida resursele obligatorii)
+
     bool isUsingTexture() const { return usingTexture; }
 
-    // Afișare virtuală: operator<< va apela această metodă
+    // afisare virtuală cu operator<<
     virtual void print(std::ostream& os) const;
 
     friend std::ostream& operator<<(std::ostream& os, const Character& c);
@@ -100,10 +100,10 @@ protected:
     virtual void drawImpl(sf::RenderTarget& target) const;
 };
 
-// Derived characters
+// derivate
 class FireboyCharacter : public Character {
 public:
-    // Constructor explicit care apelează constructorul bazei în lista de inițializare
+    // Constrctor explicit care apelează ctorul bazei
     FireboyCharacter(const std::string& nm,
                      const std::string& texturePath,
                      const sf::Vector2f& pos = {0.f, 0.f},
@@ -122,7 +122,7 @@ public:
         return tt == TileType::Solid || tt == TileType::Fire;
     }
     bool isDeadlyOn(TileType tt) const override {
-        return tt == TileType::Water; // apa omoară focul
+        return tt == TileType::Water; // apa omoara focul
     }
     bool canExitThrough(TileType tt) const override { return tt == TileType::ExitFire; }
     bool isTopHalfDeadly(TileType tt) const override { return tt == TileType::HalfWater; }
@@ -130,7 +130,7 @@ public:
 
 class WatergirlCharacter : public Character {
 public:
-    // Constructor explicit care apelează constructorul bazei în lista de inițializare
+    // ctor explicit care apeleaza ctorul bazei în lista de inițializare
     WatergirlCharacter(const std::string& nm,
                        const std::string& texturePath,
                        const sf::Vector2f& pos = {0.f, 0.f},
@@ -157,7 +157,7 @@ public:
 
 
 
-// Earthboy: personaj neutru cu exit dedicat verde
+// Earthboy
 class EarthboyCharacter : public Character {
 public:
     EarthboyCharacter(const std::string& nm,
@@ -174,7 +174,7 @@ public:
         Character::print(os);
         os << " element=Neutral(Earth)";
     }
-    // Comportament neutru: doar Solid e suport, lichidele omoară (moștenit)
+    // comportament neutru: doar solid e suport, lichidele omoara (moștenit)
     bool canExitThrough(TileType tt) const override { return tt == TileType::ExitEarth; }
 };
 
