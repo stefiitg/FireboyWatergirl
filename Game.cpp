@@ -29,7 +29,7 @@ Game::Game(const Game& other)
     unsigned int hPx = static_cast<unsigned>(map.getHeight() * Tile::getSize());
     window = std::make_unique<sf::RenderWindow>(sf::VideoMode(wPx, hPx), "Fireboy & Watergirl");
 
-
+// clone pt personaje si prototipuri
     if (other.fireboy) fireboy = other.fireboy->clone();
     if (other.watergirl) watergirl = other.watergirl->clone();
     if (other.earthboy) earthboy = other.earthboy->clone();
@@ -44,7 +44,7 @@ Game::Game(const Game& other)
     }
 }
 
-
+//operator de atribuire prin copy and swap
 Game& Game::operator=(Game other) {
     this->swap(other);
     return *this;
@@ -69,7 +69,7 @@ void Game::processInput(float dt) {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::H)) watergirl->moveRight(dt);
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::T)) watergirl->jump();
 
-    // Earthboy controls: J (left), L (right), I (jump)
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::J)) earthboy->moveLeft(dt);
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)) earthboy->moveRight(dt);
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::I)) earthboy->jump();
@@ -90,7 +90,7 @@ void Game::handleCollisions(Character& ch, const sf::Vector2f& respawnPos,
         for (int c = leftCol; c <= rightCol; ++c) {
             TileType tt = map.getTileTypeAtGrid(c, r);
 
-            // Tratare solidă pe baza polimorfismului
+            // tratare solida pe baza polimorfismului
             if (ch.isSolidOn(tt)) {
                 sf::FloatRect tileRect(c * Tile::getSize(), r * Tile::getSize(), Tile::getSize(), Tile::getSize());
                 if (intersects(cb, tileRect)) {
@@ -107,14 +107,14 @@ void Game::handleCollisions(Character& ch, const sf::Vector2f& respawnPos,
                 }
             }
 
-
+//tratare speciala pt half fire si half water
             if (tt == TileType::HalfFire || tt == TileType::HalfWater) {
                 sf::FloatRect tileRect(c * Tile::getSize(), r * Tile::getSize(), Tile::getSize(), Tile::getSize());
                 const float halfH = Tile::getSize() * 0.5f;
                 sf::FloatRect topRect(tileRect.left, tileRect.top, tileRect.width, halfH);
                 sf::FloatRect bottomRect(tileRect.left, tileRect.top + halfH, tileRect.width, halfH);
 
-                // Partea de jos: solidă pentru toți
+                // partea de jos e solida pt toti
                 if (intersects(cb, bottomRect)) {
                     float charCenterY = cb.top + cb.height * 0.5f;
                     float tileCenterY = bottomRect.top + bottomRect.height * 0.5f;
@@ -129,7 +129,7 @@ void Game::handleCollisions(Character& ch, const sf::Vector2f& respawnPos,
                 }
 
 
-                if (intersects(cb, topRect)) {
+                if (intersects(cb, topRect)) { //partea de sus este letala/ok
                     if (ch.isTopHalfDeadly(tt)) {
                         gameOver = true;
                         reachedExitForCharacter = false;
@@ -138,7 +138,7 @@ void Game::handleCollisions(Character& ch, const sf::Vector2f& respawnPos,
                 }
             }
 
-
+            // moneda-zona activa e mijlocul jumatatii superioare
             if (tt == TileType::Coin || tt == TileType::FireCoin || tt == TileType::WaterCoin || tt == TileType::EarthCoin) {
                 sf::FloatRect tileRect(c * Tile::getSize(), r * Tile::getSize(), Tile::getSize(), Tile::getSize());
                 const float halfH = Tile::getSize() * 0.5f;
@@ -146,7 +146,7 @@ void Game::handleCollisions(Character& ch, const sf::Vector2f& respawnPos,
                 sf::FloatRect coinRect(tileRect.left + quarterW, tileRect.top,
                                        Tile::getSize() * 0.5f, halfH);
                 if (intersects(cb, coinRect)) {
-
+                    // colectare conditionata de tipul jucatorului- downcast
                     bool canCollect = false;
                     if (tt == TileType::Coin) {
 
@@ -170,7 +170,7 @@ void Game::handleCollisions(Character& ch, const sf::Vector2f& respawnPos,
             }
 
             if (ch.isDeadlyOn(tt)) {
-
+   //a atins un tile letal=> game over
                 gameOver = true;
                 reachedExitForCharacter = false;
                 return;
@@ -227,9 +227,9 @@ void Game::render() {
             window->setTitle("WIN");
         }
     }
-   // "try again daca jocul e pierdut
+
     if (gameOver) {
-        // overlay semi-transparent
+
         sf::RectangleShape overlay;
         overlay.setSize(sf::Vector2f(static_cast<float>(window->getSize().x), static_cast<float>(window->getSize().y)));
         overlay.setFillColor(sf::Color(0, 0, 0, 150));
@@ -279,6 +279,7 @@ Game::Game(int mapW, int mapH)
             if (t == TileType::Coin || t == TileType::FireCoin || t == TileType::WaterCoin || t == TileType::EarthCoin) totalCoins++;
         }
     }
+    // verifica incarcarea texturilor obligatorii pentru personaje daca lipsesc, arunca in exceptie
 
     if (!fireboy->isUsingTexture()) {
         throw ResourceLoadError("Failed to load mandatory asset: assets/fireboy1.png");
@@ -286,7 +287,7 @@ Game::Game(int mapW, int mapH)
     if (!watergirl->isUsingTexture()) {
         throw ResourceLoadError("Failed to load mandatory asset: assets/watergirl1.png");
     }
-
+   //fallback ul la culori cand texturile nu erau obligatorii
     fireboy->setFallbackAppearance(sf::Color::Red);
     watergirl->setFallbackAppearance(sf::Color::Blue);
 
@@ -297,18 +298,17 @@ Game::Game(int mapW, int mapH)
         3, sf::Color::Green);
     earthboy->setFallbackAppearance(sf::Color::Green);
 
-    // Option A (recommended): Tratare Earthboy ca avand textura obligatorie
+
     if (!earthboy->isUsingTexture()) {
         throw ResourceLoadError("Failed to load mandatory asset: assets/earthboy.png");
     }
 
-    // Salveaza prototipurile initiale (pentru resetare prin clone)
+    // salveaza prototipurile initiale (pentru resetare prin clone)
     fireboyPrototype = fireboy->clone();
     watergirlPrototype = watergirl->clone();
     earthboyPrototype = earthboy->clone();
 
-    // Incarca font pentru mesajul de castig
-    // Incercam fonturi uzuale din Windows
+    //font ptr mesajul de castig
     const char* candidates[] = {
         "C:\\Windows\\Fonts\\arial.ttf",
         "C:\\Windows\\Fonts\\segoeui.ttf",
@@ -321,18 +321,18 @@ Game::Game(int mapW, int mapH)
     if (winFontLoaded) {
         winText.setFont(winFont);
         winText.setString("WIN");
-        // Dimensiunea textului proportional cu inaltimea ferestrei
+        // dimensiunea textului proportional cu inaltimea ferestrei
         unsigned int size = static_cast<unsigned int>(std::max(30.f, (window->getSize().y * 0.2f)));
         winText.setCharacterSize(size);
         winText.setFillColor(sf::Color::Yellow);
         winText.setOutlineThickness(4.f);
         winText.setOutlineColor(sf::Color::Black);
-        // Pozitia exacta va fi recalculata in render() pentru a ramane centrata
-        // Configureaza si textul pentru ecranul de pierdere
+        // pozitia exacta va fi recalculata in render() pentru a ramane centrata
+        // configureaza si textul pentru ecranul de pierdere
         loseText.setFont(winFont);
         loseText.setString("TRY AGAIN!");
         loseText.setCharacterSize(size);
-        loseText.setFillColor(sf::Color(220, 20, 60)); // crimson/rosu
+        loseText.setFillColor(sf::Color(220, 20, 60));
         loseText.setOutlineThickness(4.f);
         loseText.setOutlineColor(sf::Color::Black);
     } else {
@@ -341,7 +341,7 @@ Game::Game(int mapW, int mapH)
 }
 
 void Game::resetLevel() {
-    // Regenerare harta si resetare monede
+    // regenerare harta si resetare
     map.generateAscendingPlatforms(12345);
     totalCoins = 0;
     collectedCoins = 0;
@@ -352,22 +352,22 @@ void Game::resetLevel() {
         }
     }
 
-    // Recreeaza personajele din prototipuri
+
     if (fireboyPrototype) fireboy = fireboyPrototype->clone();
     if (watergirlPrototype) watergirl = watergirlPrototype->clone();
     if (earthboyPrototype) earthboy = earthboyPrototype->clone();
 
-    // Reseteaza pozitiile la punctele de respawn
+    // reseteaza pozitiile
     fireboy->setPosition(map.respawnWorldPosForFire());
     watergirl->setPosition(map.respawnWorldPosForWater());
     earthboy->setPosition(map.respawnWorldPosForEarth());
 
-    // Reaplica fallback appearance (in cazul build-urilor fara texturi)
+    // reaplica fallback appearance --pt cazul in care nu s obligatorii
     fireboy->setFallbackAppearance(sf::Color::Red);
     watergirl->setFallbackAppearance(sf::Color::Blue);
     earthboy->setFallbackAppearance(sf::Color::Green);
 
-    // Reset flags
+    // reset flags
     won = false;
     gameOver = false;
     fireboyAtExit = false;
@@ -397,6 +397,6 @@ void Game::run() {
         if (dt > 0.05f) dt = 0.05f;
         processInput(dt);
         update(dt);
-        render();
+        render(); //-fix eroare la dragging ul ferestrei
     }
 }

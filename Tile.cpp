@@ -27,7 +27,7 @@ bool Tile::exitEarthLoaded = false;
 void Tile::ensureExitTexturesLoaded() {
     if (exitTexturesLoaded) return;
     // incercam sa incarcam fiecare textura independent; pastam flags
-    // nu flosim throw daca incarcarea esueaza; fallback la dreptunghiuri in caz contrar
+    // nu flosim throw daca incarcarea esueaza, fallback la dreptunghiuriile initiale in caz contrar
     exitFireLoaded = exitFireTex.loadFromFile("assets/exit_fireboy.png");
     exitWaterLoaded = exitWaterTex.loadFromFile("assets/exit_watergirl.png");
     exitEarthLoaded = exitEarthTex.loadFromFile("assets/exit_earthboy.png");
@@ -138,7 +138,7 @@ void Tile::draw(sf::RenderTarget& target) const {
         // daca textura nu se incarca- ia culoarea gri de la inceput
     }
 
-    // tratament special pt HalfWater: render cu textura daca exista
+    // tratament special pt Halfwater : render cu textura daca exista
     if (type_ == TileType::HalfWater) {
         if (!g_halfWaterTexTried) {
             g_halfWaterTexTried = true;

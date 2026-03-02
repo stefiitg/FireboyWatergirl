@@ -7,7 +7,7 @@
 
 enum class TileType { Empty, Solid, Fire, Water, HalfFire, HalfWater, Coin, FireCoin, WaterCoin, EarthCoin, ExitFire, ExitWater, ExitEarth };
 
-//add to string
+
 std::string toString(TileType t);
 
 class Tile {
@@ -16,7 +16,7 @@ public:
     Tile(TileType t, int col, int row);
 
     TileType getType() const { return type_; }
-    //void setType(TileType t) { type_ = t; }
+
 //change
     void draw(sf::RenderTarget& target) const;
     static constexpr int getSize() { return 48; }
@@ -24,17 +24,17 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Tile& t);
 
 private:
-    // Static texture and flags for Solid tile (loaded once on demand)
+    // texturi statice ptr tile ul solid
     static sf::Texture solidTex;
-    static bool solidTexLoaded;  // guard to attempt loading only once
-    static bool solidTexOk;      // whether loading succeeded
+    static bool solidTexLoaded;
+    static bool solidTexOk;      // -daca incarcarea e cu succes
 
-    // Static textures for exit tiles (loaded once on demand)
+    // texturi statice ptr tile urile exit
     static sf::Texture exitFireTex;
     static sf::Texture exitWaterTex;
     static sf::Texture exitEarthTex;
-    static bool exitTexturesLoaded;      // guard to attempt loading only once
-    static bool exitFireLoaded;          // individual success flags
+    static bool exitTexturesLoaded;
+    static bool exitFireLoaded;          // flag uri individuale pt incarcare cu succes
     static bool exitWaterLoaded;
     static bool exitEarthLoaded;
 
