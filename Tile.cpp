@@ -11,7 +11,7 @@ static sf::Texture g_halfFireTex;
 static bool g_halfFireTexTried = false;
 static bool g_halfFireTexOk = false;
 
-// Static member definitions for exit textures and flags
+
 sf::Texture Tile::solidTex;
 bool Tile::solidTexLoaded = false;
 bool Tile::solidTexOk = false;
@@ -26,8 +26,8 @@ bool Tile::exitEarthLoaded = false;
 
 void Tile::ensureExitTexturesLoaded() {
     if (exitTexturesLoaded) return;
-    // Attempt to load each texture independently; keep flags per texture
-    // Do not throw if loading fails; exits will fallback to colored rectangles
+    // incercam sa incarcam fiecare textura independent; pastam flags
+    // nu flosim throw daca incarcarea esueaza; fallback la dreptunghiuri in caz contrar
     exitFireLoaded = exitFireTex.loadFromFile("assets/exit_fireboy.png");
     exitWaterLoaded = exitWaterTex.loadFromFile("assets/exit_watergirl.png");
     exitEarthLoaded = exitEarthTex.loadFromFile("assets/exit_earthboy.png");
@@ -64,8 +64,8 @@ Tile::Tile(TileType t, int col, int row)
 {
     shape_.setSize(sf::Vector2f(static_cast<float>(getSize()), static_cast<float>(getSize())));
     shape_.setPosition(static_cast<float>(col * getSize()), static_cast<float>(row * getSize()));
-    //change
-    // Set colors based on tile type
+
+    // setam culorile in functie de tile
     switch (type_) {
         case TileType::Empty:
             shape_.setFillColor(sf::Color::Transparent);
@@ -80,15 +80,15 @@ Tile::Tile(TileType t, int col, int row)
             shape_.setFillColor(sf::Color::Blue);
             break;
         case TileType::HalfFire:
-            // culoare orientativă; randarea reală desenează două jumătăți
+            // culoare orientativa
             shape_.setFillColor(sf::Color::Red);
             break;
         case TileType::HalfWater:
-            // culoare orientativă; randarea reală desenează două jumătăți
+            // culoare orientativa
             shape_.setFillColor(sf::Color::Blue);
             break;
         case TileType::Coin:
-            // culoare orientativă; randarea reală desenează doar mijlocul jumătății superioare
+            // culoare orientativa, randarea reala deseneaza doar mijlocul jumatații superioare
             shape_.setFillColor(sf::Color(200, 200, 0));
             break;
         case TileType::FireCoin:
@@ -116,10 +116,10 @@ Tile::Tile(TileType t, int col, int row)
 }
 
 void Tile::draw(sf::RenderTarget& target) const {
-    // Nu desenăm nimic pentru plăcile Empty
+    // nu se deseneaza nimic pt placile empty
     if (type_ == TileType::Empty) return;
 
-    // Textured rendering for Solid tiles with graceful fallback
+    // randare textured pt solid tiles cu fallback
     if (type_ == TileType::Solid) {
         ensureSolidTextureLoaded();
         if (solidTexOk) {
@@ -133,12 +133,12 @@ void Tile::draw(sf::RenderTarget& target) const {
                 s.setScale(scaleX, scaleY);
             }
             target.draw(s);
-            return; // textured Solid drawn
+            return; // desenare textured solid
         }
-        // if texture failed to load, fall through to existing gray rectangle drawing at the end
+        // daca textura nu se incarca- ia culoarea gri de la inceput
     }
 
-    // Special handling for HalfWater: try to render with texture if available
+    // tratament special pt HalfWater: render cu textura daca exista
     if (type_ == TileType::HalfWater) {
         if (!g_halfWaterTexTried) {
             g_halfWaterTexTried = true;
@@ -156,12 +156,12 @@ void Tile::draw(sf::RenderTarget& target) const {
                 s.setScale(scaleX, scaleY);
             }
             target.draw(s);
-            return; // textured HalfWater drawn
+            return; // desenare halfwater
         }
-        // if texture failed, fall through to existing old HalfWater drawing code below
+        // daca textura nu se incarca, fallback
     }
 
-    // Special handling for HalfFire: render with texture if available; fallback to old drawing
+    // tratare speciala pt half fire
     if (type_ == TileType::HalfFire) {
         if (!g_halfFireTexTried) {
             g_halfFireTexTried = true;
@@ -179,12 +179,12 @@ void Tile::draw(sf::RenderTarget& target) const {
                 s.setScale(scaleX, scaleY);
             }
             target.draw(s);
-            return; // textured HalfFire drawn as a full tile
+            return; // -textura lui halffire(si halfwater) se deseneaza ca un tile intreg
         }
-        // if texture failed, fall through to existing old HalfFire drawing code below
+        //daca textura esuaza , fallback la jumate rosu jumate gri
     }
 
-    // Exit tiles: prefer textured rendering with graceful fallback
+    // textura pt tile urile exit
     if (type_ == TileType::ExitFire || type_ == TileType::ExitWater || type_ == TileType::ExitEarth) {
         ensureExitTexturesLoaded();
 
@@ -204,14 +204,14 @@ void Tile::draw(sf::RenderTarget& target) const {
             sprite.setScale(factor, factor);
             sprite.setPosition(shape_.getPosition());
             target.draw(sprite);
-            return; // done drawing the exit tile with texture
+            return;
         }
-        // If texture missing or invalid, fall through to existing rectangle drawing
+        // daca textura lipseste, fallback la dreptunghiul gri
     }
 
     // Pentru Fire/Water și HalfFire/HalfWater, desenăm două jumătăți:
-    //  - jumătatea superioară: culoarea actuală (roșu/albastru)
-    //  - jumătatea inferioară: gri (ca la Solid)
+    //  - jumatatea superioara: culoarea actuală (roșu/albastru)
+    //  - jumatatea inferioara: gri (ca la Solid)
     if (type_ == TileType::Fire || type_ == TileType::Water ||
         type_ == TileType::HalfFire || type_ == TileType::HalfWater) {
         const sf::Vector2f pos = shape_.getPosition();
@@ -234,32 +234,32 @@ void Tile::draw(sf::RenderTarget& target) const {
         return;
     }
 
-    // Coin-uri: desenăm doar zona de monedă (mijlocul jumătății superioare)
+    // coin-uri: desenam doar zona de monedă (mijlocul jumatații superioare)
     if (type_ == TileType::Coin || type_ == TileType::FireCoin || type_ == TileType::WaterCoin || type_ == TileType::EarthCoin) {
         const sf::Vector2f pos = shape_.getPosition();
         const sf::Vector2f size = shape_.getSize();
-        const float halfH = size.y / 2.f; // jumătatea superioară
+        const float halfH = size.y / 2.f; // jumatatea superioara
         const float quarterW = size.x / 4.f;
         const float coinLeft = pos.x + quarterW;      // exclude 1/4 stânga
         const float coinWidth = size.x / 2.f;         // mijloc (1/2 lățime)
-        const float coinTop = pos.y;                  // în jumătatea superioară
-        const float coinHeight = halfH;               // toată jumătatea superioară
+        const float coinTop = pos.y;                  // an jumatatea superioara
+        const float coinHeight = halfH;               // toată jumatatea superioara
 
         sf::RectangleShape coin(sf::Vector2f(coinWidth, coinHeight));
         coin.setPosition(sf::Vector2f(coinLeft, coinTop));
         // culoare in functie de tip
         if (type_ == TileType::FireCoin) {
-            // portocaliu deschis
+            // portocaliu deschis pt fireboy
             coin.setFillColor(sf::Color(255, 200, 120));
         } else if (type_ == TileType::WaterCoin) {
             coin.setFillColor(sf::Color::Cyan);
         } else if (type_ == TileType::EarthCoin) {
             coin.setFillColor(sf::Color::Green);
         } else {
-            // Coin generic (compatibilitate): auriu
+            // coin generic (compatibilitate): auriu
             coin.setFillColor(sf::Color(255, 215, 0));
         }
-        // opțional o margine ușoară
+        // o margine ușoară- pt dimensiune
         coin.setOutlineThickness(1.f);
         if (type_ == TileType::WaterCoin) {
             coin.setOutlineColor(sf::Color(0, 120, 160));
@@ -274,7 +274,7 @@ void Tile::draw(sf::RenderTarget& target) const {
         return;
     }
 
-    // Pentru celelalte tipuri, desenăm forma standard
+    // ptr celelalte tipuri desenam forma standard
     target.draw(shape_);
 }
 

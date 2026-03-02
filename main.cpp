@@ -1,4 +1,4 @@
-// main.cpp minimal după separarea în .h/.cpp
+
 #include <iostream>
 #include "Game.h"
 #include "GameExceptions.h"
