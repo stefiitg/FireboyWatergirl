@@ -14,7 +14,7 @@ private:
     std::unique_ptr<Character> fireboy;
     std::unique_ptr<Character> watergirl;
     std::unique_ptr<Character> earthboy;
-    // prototipuri pentru resetări rapide prin clonare
+    // prototipuri pentru resetari rapide prin clonare
     std::unique_ptr<Character> fireboyPrototype;
     std::unique_ptr<Character> watergirlPrototype;
     std::unique_ptr<Character> earthboyPrototype;
@@ -22,15 +22,15 @@ private:
     bool watergirlAtExit = false;
     bool earthboyAtExit = false;
     bool won = false;
-    bool gameOver = false; // Joc pierdut cand un personaj atinge elementul opus
-    // Progres monede
+    bool gameOver = false;
+
     int totalCoins = 0;
     int collectedCoins = 0;
-    // Elemente UI pentru afisarea mesajului de castig
+    // pentru afisarea mesajului de castig
     sf::Font winFont;
     sf::Text winText;
     bool winFontLoaded = false;
-    // Elemente UI pentru mesajul de pierdere
+    //  mesajul de pierdere
     sf::Text loseText;
 
     void processInput(float dt);
@@ -42,9 +42,9 @@ private:
 
 public:
     explicit Game(int mapW = 14, int mapH = 9);
-    // Copiere profunda folosind clone() pentru personajele polimorfice
+    // copiere folosind clone() pentru personajele polimorfice
     Game(const Game& other);
-    // Copy-and-swap assignment
+
     Game& operator=(Game other);
     // swap pentru copy-and-swap
     void swap(Game& other) noexcept {

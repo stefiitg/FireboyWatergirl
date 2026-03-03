@@ -59,7 +59,7 @@ public:
     // rule of 3
     Character(const Character& other);
     // clasa este abstracta
-    // folosim o variantă clasică prin const&
+    // folosim o varianta clasică prin const&
     Character& operator=(const Character& other);
 
 
@@ -68,7 +68,7 @@ public:
 
     void setOnGround(bool state);
 
-    // getters -pot fi neutilizati in unele build-uri )
+    // getters -pot fi neutilizati in unele build uri )
     [[maybe_unused]] const std::string& getName() const { return name; }
     [[maybe_unused]] int getLives() const { return lives; }
     [[maybe_unused]] sf::Vector2f getPosition() const { return position; }
@@ -91,7 +91,7 @@ public:
 
     bool isUsingTexture() const { return usingTexture; }
 
-    // afisare virtuală cu operator<<
+    // afisare virtuala cu operator<<
     virtual void print(std::ostream& os) const;
 
     friend std::ostream& operator<<(std::ostream& os, const Character& c);

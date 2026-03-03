@@ -45,19 +45,19 @@ Map& Map::operator=(const Map& other) {
 }
 
 Map::~Map() {
-    // explicit for the exercise; nothing special to release
+    // explicit
 }
 
 void Map::generateAscendingPlatforms(unsigned seed) {
-    // seed nefolosit: generarea aleatoare a fost eliminată pentru a păstra o hartă fixă
+    //  generarea aleatoare -eliminata pentru moment
     (void)seed;
 
-    // Resetăm toată harta la Empty
+    // resetare harta la empty
     for (int r = 0; r < height; ++r)
         for (int c = 0; c < width; ++c)
             grid[r][c] = Tile(TileType::Empty, c, r);
 
-    // Plăci solide plasate manual exact unde erau generate anterior (col, row)
+    // niste placi solide
     const std::pair<int,int> solids[] = {
         {1, 7}, {3, 7}, {7, 6}, {9, 5}, {11, 4}
     };
@@ -69,16 +69,17 @@ void Map::generateAscendingPlatforms(unsigned seed) {
         }
     }
 
-    // Inlocuire: la (row:7,col:2) -> HalfFire; la (row:6,col:11) -> HalfWater
+    //  (row:7,col:2) -> halfFire
+    //  (row:6,col:11) - > halfWater
     grid[height-2][2] = Tile(TileType::HalfFire, 2, height-2);
     grid[height-3][width-3] = Tile(TileType::HalfWater, width-3, height-3);
 
-    // Cerinta noua: la (row:7,col:1) inlocuieste Solid cu HalfFire
+    //  (row:7,col:1) -- halfFire
     if (height > 2 && width > 1) {
         grid[height-2][1] = Tile(TileType::HalfFire, 1, height-2);
     }
 
-    // Adauga 3 tile-uri Solid: (row:7,col:0), (row:6,col:10), (row:6,col:12)
+    // Solid: (row:7,col:0), (row:6,col:10), (row:6,col:12)
     if (height > 2 && width > 0) {
         grid[height-2][0] = Tile(TileType::Solid, 0, height-2);
     }
@@ -89,19 +90,19 @@ void Map::generateAscendingPlatforms(unsigned seed) {
         grid[height-3][12] = Tile(TileType::Solid, 12, height-3);
     }
     grid[1][width-2] = Tile(TileType::ExitFire, width-2, 1);
-    // add a supporting solid tile exactly under Fireboy's exit
+    // tile solid pt suportul lui fireboy la exit
     if (height > 2) {
         grid[2][width-2] = Tile(TileType::Solid, width-2, 2);
     }
-    // Muta iesirea Watergirl la (row=2, col=1)
+    //  watergirl exit-- (row=2, col=1)
     if (height > 2 && width > 1) {
         grid[2][1] = Tile(TileType::ExitWater, 1, 2);
     }
-    // Muta iesirea Earthboy la (row=2, col=4)
+    // Earthboy exit-- (row:2 , col:4)
     if (height > 2 && width > 4) {
         grid[2][4] = Tile(TileType::ExitEarth, 4, 2);
     }
-    // Pastreaza suportul existent sub (1,3) si adauga unul nou sub (4,3)
+
     if (height > 3) {
         grid[3][1] = Tile(TileType::Solid, 1, 3);
         if (width > 4) {
@@ -112,9 +113,9 @@ void Map::generateAscendingPlatforms(unsigned seed) {
         grid[5][2] = Tile(TileType::Solid, 2, 5);
     }
 
-    // Monede specifice personajelor:
-    // Watergirl: (row:8,col:7),(8,8),(8,9)
-    // Fireboy: (row:8,col:1),(8,2)
+    // monede specifice personajelor:
+    // watergirl: (row:8,col:7),(8,8),(8,9)
+    // fireboy: (row:8,col:1),(8,2)
     if (height > 8) {
         int r = 8;
         if (width > 7) grid[r][7] = Tile(TileType::WaterCoin, 7, r);
@@ -124,8 +125,8 @@ void Map::generateAscendingPlatforms(unsigned seed) {
         if (width > 2) grid[r][2] = Tile(TileType::FireCoin, 2, r);
     }
 
-    // Earthboy coins: place exactly 3 at (row,col): (5,7), (4,9), (3,11)
-    // Ensure indices are in range for current map size
+    // Earthboy coins  (row,col): (5,7), (4,9), (3,11)
+    // ne asiguram ca dimensiunile mapei permit coinurile
     if (height > 5 && width > 7) {
         grid[5][7] = Tile(TileType::EarthCoin, 7, 5);
     }
@@ -174,6 +175,7 @@ sf::FloatRect Map::worldBounds() const {
     return sf::FloatRect(0.f, 0.f, width * Tile::getSize(), height * Tile::getSize());
 }
 
+//pozitiile de spawn ptr personaje
 sf::Vector2f Map::respawnWorldPosForFire() const {
     return sf::Vector2f(Tile::getSize() * 1.f, Tile::getSize() * (height - 2));
 }
@@ -183,6 +185,6 @@ sf::Vector2f Map::respawnWorldPosForWater() const {
 }
 
 sf::Vector2f Map::respawnWorldPosForEarth() const {
-    // plasam earthboy intre ceilalti doi, de ex. la col 3
+
     return sf::Vector2f(Tile::getSize() * 3.f, Tile::getSize() * (height - 2));
 }

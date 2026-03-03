@@ -27,7 +27,7 @@ public:
     TileType getTileTypeAtGrid(int col, int row) const;
     [[maybe_unused]] TileType getTileTypeAtWorld(float x, float y) const;
 
-    // Setter util pentru a modifica un tile in timpul jocului (ex: colectare moneda)
+    // setter util pentru a modifica un tile in timpul jocului (ex: colectare moneda)
     void setTileTypeAtGrid(int col, int row, TileType t);
 
     void draw(sf::RenderTarget& target) const;

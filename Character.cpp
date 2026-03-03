@@ -84,7 +84,7 @@ void Character::swap(Character& other) noexcept {
     swap(speed, other.speed);
     swap(jumpImpulse, other.jumpImpulse);
 
-    // Reatașează corect textura la sprite pentru ambele obiecte după swap
+    // reatașează textura la sprite pentru ambele obiecte dupa swap
     if (usingTexture) sprite.setTexture(texture);
     if (other.usingTexture) other.sprite.setTexture(other.texture);
 }
@@ -146,10 +146,10 @@ void Character::jump() {
     }
 }
 
-// takeDamageAndRespawn removed: game now transitions to Game Over instead of respawning
+// takeDamageAndRespawn eliminata-direct game over de aici
 
 void Character::draw(sf::RenderTarget& target) const {
-    // NVI: interfață non-virtuală, delegă la hook-ul virtual
+    // NVI: interfață non-virtuală, delega la hook-ul virtual
     drawImpl(target);
 }
 
