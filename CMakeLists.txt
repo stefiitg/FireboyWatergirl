@@ -66,6 +66,7 @@ add_executable(${MAIN_EXECUTABLE_NAME}
     Map.h
     Game.cpp
     Game.h
+    MovingPlatform.h
 )
 
 # NOTE: Add all defined targets (e.g. executables, libraries, etc. )

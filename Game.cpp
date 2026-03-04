@@ -182,10 +182,18 @@ void Game::handleCollisions(Character& ch, const sf::Vector2f& respawnPos,
             }
         }
     }
+
+    //  also handle miscarea platformei
+    handlePlatformCollisions(ch);
 }
 
 void Game::update(float dt) {
     if (won || gameOver) return;
+    fireboyAtExit = false;
+    watergirlAtExit = false;
+    earthboyAtExit = false;// update flags
+
+    map.update(dt);
     sf::FloatRect world = map.worldBounds();
     fireboy->update(dt, world);
     watergirl->update(dt, world);
@@ -197,6 +205,37 @@ void Game::update(float dt) {
 
     if (fireboyAtExit && watergirlAtExit && earthboyAtExit && collectedCoins >= totalCoins) {
         won = true;
+    }
+}
+
+void Game::handlePlatformCollisions(Character& ch) {
+
+    sf::FloatRect cb = ch.bounds();
+    for (const auto& mp : map.getMovingPlatforms()) {
+        sf::FloatRect pb = mp.bounds();
+        if (cb.intersects(pb)) {
+
+            float charCenterY = cb.top + cb.height * 0.5f;
+            float platCenterY = pb.top + pb.height * 0.5f;
+            ch.setOnGround(true);
+            if (charCenterY < platCenterY) {
+                ch.setPosition({cb.left, pb.top - cb.height});
+            } else {
+                ch.setPosition({cb.left, pb.top + pb.height});
+                ch.stopVerticalMovement();
+            }
+            cb = ch.bounds();
+        } else {
+            // CARRY minimal
+            const float epsilon = 1.5f;
+            bool horizontally = (cb.left < pb.left + pb.width) && (cb.left + cb.width > pb.left);
+            bool onTop = std::abs((cb.top + cb.height) - pb.top) <= epsilon;
+            if (horizontally && onTop) {
+                sf::Vector2f newPos = {cb.left + mp.getLastDeltaX(), cb.top};
+                ch.setPosition(newPos);
+                cb = ch.bounds();
+            }
+        }// CARRY
     }
 }
 

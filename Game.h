@@ -39,6 +39,7 @@ private:
     void update(float dt);
     void render();
     void resetLevel();
+    void handlePlatformCollisions(Character& ch);
 
 public:
     explicit Game(int mapW = 14, int mapH = 9);

@@ -5,11 +5,13 @@
 #include <ostream>
 #include <SFML/Graphics.hpp>
 #include "Tile.h"
+#include "MovingPlatform.h"
 
 class Map {
 private:
     std::vector<std::vector<Tile>> grid;
     int width{}, height{};
+    std::vector<MovingPlatform> movingPlatforms;
 
     void allocateGrid(int w, int h, TileType defaultType = TileType::Empty);
 
@@ -23,6 +25,7 @@ public:
     int getHeight() const { return height; }
 
     void generateAscendingPlatforms(unsigned seed = 0);
+    void update(float dt);
 
     TileType getTileTypeAtGrid(int col, int row) const;
     [[maybe_unused]] TileType getTileTypeAtWorld(float x, float y) const;
@@ -38,6 +41,8 @@ public:
     sf::Vector2f respawnWorldPosForFire() const;
     sf::Vector2f respawnWorldPosForWater() const;
     sf::Vector2f respawnWorldPosForEarth() const;
+
+    const std::vector<MovingPlatform>& getMovingPlatforms() const { return movingPlatforms; }
 };
 
 #endif // OOP_MAP_H

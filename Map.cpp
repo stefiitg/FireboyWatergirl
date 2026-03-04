@@ -27,6 +27,7 @@ Map::Map(const Map& other) {
         for (int c = 0; c < width; ++c) row.push_back(other.grid[r][c]);
         grid.push_back(std::move(row));
     }
+    movingPlatforms = other.movingPlatforms;
 }
 
 Map& Map::operator=(const Map& other) {
@@ -41,6 +42,7 @@ Map& Map::operator=(const Map& other) {
         for (int c = 0; c < width; ++c) row.push_back(other.grid[r][c]);
         grid.push_back(std::move(row));
     }
+    movingPlatforms = other.movingPlatforms;
     return *this;
 }
 
@@ -59,7 +61,7 @@ void Map::generateAscendingPlatforms(unsigned seed) {
 
     // niste placi solide
     const std::pair<int,int> solids[] = {
-        {1, 7}, {3, 7}, {7, 6}, {9, 5}, {11, 4}
+        {1, 7}, {3, 7}, {9, 5}, {11, 4}//eliminare solid sixseven
     };
     for (const auto& rc : solids) {
         int c = rc.first;
@@ -67,6 +69,17 @@ void Map::generateAscendingPlatforms(unsigned seed) {
         if (r >= 0 && r < height && c >= 0 && c < width) {
             grid[r][c] = Tile(TileType::Solid, c, r);
         }
+    }
+
+
+    movingPlatforms.clear();
+    if (height > 6 && width > 8) {
+        const float ts = static_cast<float>(Tile::getSize());
+        int row = 6; int col = 7;
+        sf::Vector2f startPos(col * ts, row * ts);
+        float minX = 6 * ts;
+        float maxX = 8 * ts;
+        movingPlatforms.emplace_back(startPos, minX, maxX, 80.f, 1);
     }
 
     //  (row:7,col:2) -> halfFire
@@ -153,6 +166,8 @@ void Map::draw(sf::RenderTarget& target) const {
     for (int r = 0; r < height; ++r)
         for (int c = 0; c < width; ++c)
             grid[r][c].draw(target);
+
+    for (const auto& mp : movingPlatforms) mp.draw(target);
 }
 
 void Map::setTileTypeAtGrid(int col, int row, TileType t) {
@@ -187,4 +202,8 @@ sf::Vector2f Map::respawnWorldPosForWater() const {
 sf::Vector2f Map::respawnWorldPosForEarth() const {
 
     return sf::Vector2f(Tile::getSize() * 3.f, Tile::getSize() * (height - 2));
+}
+
+void Map::update(float dt) {
+    for (auto& mp : movingPlatforms) mp.update(dt);
 }
