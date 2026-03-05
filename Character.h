@@ -195,10 +195,6 @@ public:
         Character::print(os);
         os << " element=Air";
     }
-
-    bool isDeadlyOn(TileType tt) const override {
-        return tt == TileType::Fire || tt == TileType::Water;
-    }
     bool canExitThrough(TileType tt) const override { return tt == TileType::ExitAir; }
 };
 
