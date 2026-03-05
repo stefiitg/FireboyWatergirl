@@ -9,7 +9,7 @@
 #include "Tile.h"
 
 
-enum class Element { Fire, Water, Neutral };
+enum class Element { Fire, Water, Neutral, Air };
 
 class Character {
 private:
@@ -103,7 +103,7 @@ protected:
 // derivate
 class FireboyCharacter : public Character {
 public:
-    // Constrctor explicit care apelează ctorul bazei
+    // constrctor explicit care apelează ctorul bazei
     FireboyCharacter(const std::string& nm,
                      const std::string& texturePath,
                      const sf::Vector2f& pos = {0.f, 0.f},
@@ -149,7 +149,7 @@ public:
         return tt == TileType::Solid || tt == TileType::Water;
     }
     bool isDeadlyOn(TileType tt) const override {
-        return tt == TileType::Fire; // focul omoară apa
+        return tt == TileType::Fire; // focul omoara apa
     }
     bool canExitThrough(TileType tt) const override { return tt == TileType::ExitWater; }
     bool isTopHalfDeadly(TileType tt) const override { return tt == TileType::HalfFire; }
@@ -178,4 +178,29 @@ public:
     bool canExitThrough(TileType tt) const override { return tt == TileType::ExitEarth; }
 };
 
-#endif // OOP_CHARACTER_H
+// Airgirl e clasa derivata adaugata la final din baza character:
+class AirgirlCharacter : public Character {
+public:
+    AirgirlCharacter(const std::string& nm,
+                     const std::string& texturePath,
+                     const sf::Vector2f& pos = {0.f, 0.f},
+                     int lifeCount = 3,
+                     const sf::Color& fallbackColor = sf::Color(220,220,255))
+        : Character(nm, texturePath, pos, lifeCount, fallbackColor) {}
+    Element element() const override { return Element::Air; }
+    std::unique_ptr<Character> clone() const override {
+        return std::make_unique<AirgirlCharacter>(*this);
+    }
+    void print(std::ostream& os) const override {
+        Character::print(os);
+        os << " element=Air";
+    }
+
+    bool isDeadlyOn(TileType tt) const override {
+        return tt == TileType::Fire || tt == TileType::Water;
+    }
+    bool canExitThrough(TileType tt) const override { return tt == TileType::ExitAir; }
+};
+
+#endif
+

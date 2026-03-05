@@ -5,7 +5,7 @@
 #include <ostream>
 #include <string>
 
-enum class TileType { Empty, Solid, Fire, Water, HalfFire, HalfWater, Coin, FireCoin, WaterCoin, EarthCoin, ExitFire, ExitWater, ExitEarth };
+enum class TileType { Empty, Solid, Fire, Water, HalfFire, HalfWater, Coin, FireCoin, WaterCoin, EarthCoin, ExitFire, ExitWater, ExitEarth, ExitAir };
 
 
 std::string toString(TileType t);
@@ -33,10 +33,12 @@ private:
     static sf::Texture exitFireTex;
     static sf::Texture exitWaterTex;
     static sf::Texture exitEarthTex;
+    static sf::Texture exitAirTex;
     static bool exitTexturesLoaded;
     static bool exitFireLoaded;          // flag uri individuale pt incarcare cu succes
     static bool exitWaterLoaded;
     static bool exitEarthLoaded;
+    static bool exitAirLoaded;
 
     static void ensureExitTexturesLoaded();
     static void ensureSolidTextureLoaded();

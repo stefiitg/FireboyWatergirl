@@ -15,6 +15,7 @@ Game::Game(const Game& other)
       fireboyAtExit(other.fireboyAtExit),
       watergirlAtExit(other.watergirlAtExit),
       earthboyAtExit(other.earthboyAtExit),
+      airgirlAtExit(other.airgirlAtExit),
       won(other.won),
       gameOver(other.gameOver),
       totalCoins(other.totalCoins),
@@ -33,9 +34,11 @@ Game::Game(const Game& other)
     if (other.fireboy) fireboy = other.fireboy->clone();
     if (other.watergirl) watergirl = other.watergirl->clone();
     if (other.earthboy) earthboy = other.earthboy->clone();
+    if (other.airgirl) airgirl = other.airgirl->clone();
     if (other.fireboyPrototype) fireboyPrototype = other.fireboyPrototype->clone();
     if (other.watergirlPrototype) watergirlPrototype = other.watergirlPrototype->clone();
     if (other.earthboyPrototype) earthboyPrototype = other.earthboyPrototype->clone();
+    if (other.airgirlPrototype) airgirlPrototype = other.airgirlPrototype->clone();
 
 
     if (winFontLoaded) {
@@ -73,6 +76,11 @@ void Game::processInput(float dt) {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::J)) earthboy->moveLeft(dt);
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)) earthboy->moveRight(dt);
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::I)) earthboy->jump();
+
+    // Airgirl controls: Numpad1=left, Numpad3=right, Numpad5=jump
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Numpad1)) airgirl->moveLeft(dt);
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Numpad3)) airgirl->moveRight(dt);
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Numpad5)) airgirl->jump();
 }
 
 void Game::handleCollisions(Character& ch, const sf::Vector2f& respawnPos,
@@ -192,18 +200,21 @@ void Game::update(float dt) {
     fireboyAtExit = false;
     watergirlAtExit = false;
     earthboyAtExit = false;// update flags
+    airgirlAtExit = false;
 
     map.update(dt);
     sf::FloatRect world = map.worldBounds();
     fireboy->update(dt, world);
     watergirl->update(dt, world);
     earthboy->update(dt, world);
+    if (airgirl) airgirl->update(dt, world);
 
     handleCollisions(*fireboy, map.respawnWorldPosForFire(), fireboyAtExit, TileType::ExitFire);
     handleCollisions(*watergirl, map.respawnWorldPosForWater(), watergirlAtExit, TileType::ExitWater);
     handleCollisions(*earthboy, map.respawnWorldPosForEarth(), earthboyAtExit, TileType::ExitEarth);
+    if (airgirl) handleCollisions(*airgirl, map.respawnWorldPosForAir(), airgirlAtExit, TileType::ExitAir);
 
-    if (fireboyAtExit && watergirlAtExit && earthboyAtExit && collectedCoins >= totalCoins) {
+    if (fireboyAtExit && watergirlAtExit && earthboyAtExit && airgirlAtExit && collectedCoins >= totalCoins) {
         won = true;
     }
 }
@@ -246,6 +257,7 @@ void Game::render() {
     fireboy->draw(*window);
     watergirl->draw(*window);
     earthboy->draw(*window);
+    if (airgirl) airgirl->draw(*window);
 
     if (won) {
 
@@ -327,8 +339,8 @@ Game::Game(int mapW, int mapH)
         throw ResourceLoadError("Failed to load mandatory asset: assets/watergirl1.png");
     }
    //fallback ul la culori cand texturile nu erau obligatorii
-    fireboy->setFallbackAppearance(sf::Color::Red);
-    watergirl->setFallbackAppearance(sf::Color::Blue);
+   // fireboy->setFallbackAppearance(sf::Color::Red);
+   //watergirl->setFallbackAppearance(sf::Color::Blue);
 
     earthboy = std::make_unique<EarthboyCharacter>(
         "Earthboy", "assets/earthboy.png",
@@ -342,10 +354,21 @@ Game::Game(int mapW, int mapH)
         throw ResourceLoadError("Failed to load mandatory asset: assets/earthboy.png");
     }
 
+
+    airgirl = std::make_unique<AirgirlCharacter>(
+        "Airgirl", "assets/airgirl.png",
+        map.respawnWorldPosForAir(),
+        3, sf::Color::White);
+   // airgirl->setFallbackAppearance(sf::Color::White);
+    if (!airgirl->isUsingTexture()) {
+       throw ResourceLoadError("Failed to load mandatory asset: assets/airgirl.png");
+    }
+
     // salveaza prototipurile initiale (pentru resetare prin clone)
     fireboyPrototype = fireboy->clone();
     watergirlPrototype = watergirl->clone();
     earthboyPrototype = earthboy->clone();
+    airgirlPrototype = airgirl->clone();
 
     //font ptr mesajul de castig
     const char* candidates[] = {
@@ -395,16 +418,19 @@ void Game::resetLevel() {
     if (fireboyPrototype) fireboy = fireboyPrototype->clone();
     if (watergirlPrototype) watergirl = watergirlPrototype->clone();
     if (earthboyPrototype) earthboy = earthboyPrototype->clone();
+    if (airgirlPrototype) airgirl = airgirlPrototype->clone();
 
     // reseteaza pozitiile
     fireboy->setPosition(map.respawnWorldPosForFire());
     watergirl->setPosition(map.respawnWorldPosForWater());
     earthboy->setPosition(map.respawnWorldPosForEarth());
+    if (airgirl) airgirl->setPosition(map.respawnWorldPosForAir());
 
     // reaplica fallback appearance --pt cazul in care nu s obligatorii
     fireboy->setFallbackAppearance(sf::Color::Red);
     watergirl->setFallbackAppearance(sf::Color::Blue);
     earthboy->setFallbackAppearance(sf::Color::Green);
+    if (airgirl) airgirl->setFallbackAppearance(sf::Color(220,220,255));
 
     // reset flags
     won = false;
@@ -412,6 +438,7 @@ void Game::resetLevel() {
     fireboyAtExit = false;
     watergirlAtExit = false;
     earthboyAtExit = false;
+    airgirlAtExit = false;
 }
 
 std::ostream& operator<<(std::ostream& os, const Game& g) {
@@ -420,6 +447,7 @@ std::ostream& operator<<(std::ostream& os, const Game& g) {
     os << "Fireboy: " << *g.fireboy << "\n";
     os << "Watergirl: " << *g.watergirl << "\n";
     os << "Earthboy: " << *g.earthboy << "\n";
+    if (g.airgirl) os << "Airgirl: " << *g.airgirl << "\n";
     return os;
 }
 

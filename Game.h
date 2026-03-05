@@ -14,13 +14,16 @@ private:
     std::unique_ptr<Character> fireboy;
     std::unique_ptr<Character> watergirl;
     std::unique_ptr<Character> earthboy;
+    std::unique_ptr<Character> airgirl;
     // prototipuri pentru resetari rapide prin clonare
     std::unique_ptr<Character> fireboyPrototype;
     std::unique_ptr<Character> watergirlPrototype;
     std::unique_ptr<Character> earthboyPrototype;
+    std::unique_ptr<Character> airgirlPrototype;
     bool fireboyAtExit = false;
     bool watergirlAtExit = false;
     bool earthboyAtExit = false;
+    bool airgirlAtExit = false;
     bool won = false;
     bool gameOver = false;
 
@@ -55,12 +58,15 @@ public:
         swap(fireboy, other.fireboy);
         swap(watergirl, other.watergirl);
         swap(earthboy, other.earthboy);
+        swap(airgirl, other.airgirl);
         swap(fireboyPrototype, other.fireboyPrototype);
         swap(watergirlPrototype, other.watergirlPrototype);
         swap(earthboyPrototype, other.earthboyPrototype);
+        swap(airgirlPrototype, other.airgirlPrototype);
         swap(fireboyAtExit, other.fireboyAtExit);
         swap(watergirlAtExit, other.watergirlAtExit);
         swap(earthboyAtExit, other.earthboyAtExit);
+        swap(airgirlAtExit, other.airgirlAtExit);
         swap(won, other.won);
         swap(gameOver, other.gameOver);
         swap(totalCoins, other.totalCoins);

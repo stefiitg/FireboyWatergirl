@@ -19,10 +19,12 @@ bool Tile::solidTexOk = false;
 sf::Texture Tile::exitFireTex;
 sf::Texture Tile::exitWaterTex;
 sf::Texture Tile::exitEarthTex;
+sf::Texture Tile::exitAirTex;
 bool Tile::exitTexturesLoaded = false;
 bool Tile::exitFireLoaded = false;
 bool Tile::exitWaterLoaded = false;
 bool Tile::exitEarthLoaded = false;
+bool Tile::exitAirLoaded = false;
 
 void Tile::ensureExitTexturesLoaded() {
     if (exitTexturesLoaded) return;
@@ -31,6 +33,7 @@ void Tile::ensureExitTexturesLoaded() {
     exitFireLoaded = exitFireTex.loadFromFile("assets/exit_fireboy.png");
     exitWaterLoaded = exitWaterTex.loadFromFile("assets/exit_watergirl.png");
     exitEarthLoaded = exitEarthTex.loadFromFile("assets/exit_earthboy.png");
+    exitAirLoaded = exitAirTex.loadFromFile("assets/exit_airgirl.png");
     exitTexturesLoaded = true;
 }
 
@@ -55,6 +58,7 @@ std::string toString(TileType t) {
         case TileType::ExitFire: return "ExitFire";
         case TileType::ExitWater: return "ExitWater";
         case TileType::ExitEarth: return "ExitEarth";
+        case TileType::ExitAir: return "ExitAir";
     }
     return "Unknown";
 }
@@ -84,7 +88,7 @@ Tile::Tile(TileType t, int col, int row)
             shape_.setFillColor(sf::Color::Red);
             break;
         case TileType::HalfWater:
-            // culoare orientativa
+
             shape_.setFillColor(sf::Color::Blue);
             break;
         case TileType::Coin:
@@ -96,11 +100,11 @@ Tile::Tile(TileType t, int col, int row)
             shape_.setFillColor(sf::Color(255, 200, 120));
             break;
         case TileType::WaterCoin:
-            // orientativ
+
             shape_.setFillColor(sf::Color::Cyan);
             break;
         case TileType::EarthCoin:
-            // orientativ
+
             shape_.setFillColor(sf::Color::Green);
             break;
         case TileType::ExitFire:
@@ -111,6 +115,9 @@ Tile::Tile(TileType t, int col, int row)
             break;
         case TileType::ExitEarth:
             shape_.setFillColor(sf::Color::Green);
+            break;
+        case TileType::ExitAir:
+            shape_.setFillColor(sf::Color::White);
             break;
     }
 }
@@ -185,7 +192,7 @@ void Tile::draw(sf::RenderTarget& target) const {
     }
 
     // textura pt tile urile exit
-    if (type_ == TileType::ExitFire || type_ == TileType::ExitWater || type_ == TileType::ExitEarth) {
+    if (type_ == TileType::ExitFire || type_ == TileType::ExitWater || type_ == TileType::ExitEarth || type_ == TileType::ExitAir) {
         ensureExitTexturesLoaded();
 
         const sf::Texture* tex = nullptr;
@@ -194,6 +201,7 @@ void Tile::draw(sf::RenderTarget& target) const {
             case TileType::ExitFire:  tex = &exitFireTex;  ok = exitFireLoaded;  break;
             case TileType::ExitWater: tex = &exitWaterTex; ok = exitWaterLoaded; break;
             case TileType::ExitEarth: tex = &exitEarthTex; ok = exitEarthLoaded; break;
+            case TileType::ExitAir:   tex = &exitAirTex;   ok = exitAirLoaded;   break;
             default: break;
         }
 

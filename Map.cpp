@@ -115,12 +115,20 @@ void Map::generateAscendingPlatforms(unsigned seed) {
     if (height > 2 && width > 4) {
         grid[2][4] = Tile(TileType::ExitEarth, 4, 2);
     }
+    // airgirl exit -- (row:2, col:10)
+    if (height > 2 && width > 10) {
+        grid[2][10] = Tile(TileType::ExitAir, 10, 2);
+    }
 
     if (height > 3) {
         grid[3][1] = Tile(TileType::Solid, 1, 3);
         if (width > 4) {
             grid[3][4] = Tile(TileType::Solid, 4, 3);
         }
+    }
+    // support sub exitul lui airgirl
+    if (height > 3 && width > 10) {
+        grid[3][10] = Tile(TileType::Solid, 10, 3);
     }
     if (height > 5 && width > 2) {
         grid[5][2] = Tile(TileType::Solid, 2, 5);
@@ -202,6 +210,11 @@ sf::Vector2f Map::respawnWorldPosForWater() const {
 sf::Vector2f Map::respawnWorldPosForEarth() const {
 
     return sf::Vector2f(Tile::getSize() * 3.f, Tile::getSize() * (height - 2));
+}
+
+sf::Vector2f Map::respawnWorldPosForAir() const {
+    // Fixed spawn at (row=8, col=4)
+    return sf::Vector2f(Tile::getSize() * 4.f, Tile::getSize() * 8.f);
 }
 
 void Map::update(float dt) {

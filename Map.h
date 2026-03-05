@@ -41,6 +41,7 @@ public:
     sf::Vector2f respawnWorldPosForFire() const;
     sf::Vector2f respawnWorldPosForWater() const;
     sf::Vector2f respawnWorldPosForEarth() const;
+    sf::Vector2f respawnWorldPosForAir() const;
 
     const std::vector<MovingPlatform>& getMovingPlatforms() const { return movingPlatforms; }
 };
