@@ -206,7 +206,7 @@ bool Game::handleCollisions(Character& ch) {
                 if (intersects(cb, topRect)) { //partea de sus este letala/ok
                     if (ch.isTopHalfDeadly(tt)) {
                         gameOver = true;
-                    //    reachedExitForCharacter = false;
+
                         return false;
                     }
                 }
@@ -246,7 +246,7 @@ bool Game::handleCollisions(Character& ch) {
             if (ch.isDeadlyOn(tt)) {
    //a atins un tile letal=> game over
                 gameOver = true;
-              //  reachedExitForCharacter = false;
+
                 return false;
             }
 
