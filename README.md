@@ -1,5 +1,5 @@
 # Fireboy and watergirl
-Fireboy and watergirl este un joc 2d, in care ajuti personajele sa ajunga la iesiri in acelasi timp. Presonajele, controlate cu WASD si cu TFGH pot interactiona cu diverse obiecte , se pot ajuta unul pe celalalt,dar daca ating elementul opus lor, mor. Noile personaje , Airgirl(controlat de tastele 5,1,3) si Earthboy (JIL), mor indiferent de ce element ating 
+Fireboy and watergirl este un joc 2d, in care ajuti personajele sa ajunga la iesiri in acelasi timp. Presonajele, controlate cu WAD si cu TFH pot interactiona cu diverse obiecte , se pot ajuta unul pe celalalt,dar daca ating elementul opus lor, mor. Noile personaje , Airgirl(controlat de tastele 5,1,3) si Earthboy (JIL), mor daca se ating de lava sau de apa.
 ### Folosiți template-ul corespunzător grupei voastre!
 
 | Laborant  | Link template                                |
