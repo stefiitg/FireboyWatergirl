@@ -438,13 +438,13 @@ void Game::resetLevel() {
         }
     }
 
-    // rebuild active characters from prototypes
+    //rebuild
     characters.clear();
     for (const auto& proto : characterPrototypes) {
         if (proto) characters.push_back(proto->clone());
         else characters.push_back(nullptr);
     }
-    // reset positions and fallback appearances
+    // reset
     for (size_t i = 0; i < characters.size(); ++i) {
         if (!characters[i]) continue;
         if (i < spawnPositions.size()) characters[i]->setPosition(spawnPositions[i]);
