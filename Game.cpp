@@ -27,7 +27,7 @@ void Game::initializeCharacters() {
         if (!fb->isUsingTexture()) {
             throw ResourceLoadError("Failed to load mandatory asset: assets/fireboy1.png");
         }
-        fb->setFallbackAppearance(sf::Color::Red);
+        fb->setFallbackAppearance();
         spawnPositions.push_back(spawn);
         characters.push_back(std::move(fb));
         charactersAtExit.push_back(false);
@@ -42,7 +42,7 @@ void Game::initializeCharacters() {
         if (!wg->isUsingTexture()) {
             throw ResourceLoadError("Failed to load mandatory asset: assets/watergirl1.png");
         }
-        wg->setFallbackAppearance(sf::Color::Blue);
+        wg->setFallbackAppearance();
         spawnPositions.push_back(spawn);
         characters.push_back(std::move(wg));
         charactersAtExit.push_back(false);
@@ -57,7 +57,7 @@ void Game::initializeCharacters() {
         if (!eb->isUsingTexture()) {
             throw ResourceLoadError("Failed to load mandatory asset: assets/earthboy.png");
         }
-        eb->setFallbackAppearance(sf::Color::Green);
+        eb->setFallbackAppearance();
         spawnPositions.push_back(spawn);
         characters.push_back(std::move(eb));
         charactersAtExit.push_back(false);
@@ -72,11 +72,11 @@ void Game::initializeCharacters() {
         if (!ag->isUsingTexture()) {
             throw ResourceLoadError("Failed to load mandatory asset: assets/airgirl.png");
         }
-        ag->setFallbackAppearance(sf::Color(220,220,255));
+        ag->setFallbackAppearance();
         spawnPositions.push_back(spawn);
         characters.push_back(std::move(ag));
         charactersAtExit.push_back(false);
-        characterControls.push_back(Controls{sf::Keyboard::Numpad1, sf::Keyboard::Numpad3, sf::Keyboard::Numpad5});
+        characterControls.push_back(Controls{sf::Keyboard::Numpad4, sf::Keyboard::Numpad6, sf::Keyboard::Numpad8});
     }
 
     // fill prototypes by cloning active characters
@@ -448,15 +448,8 @@ void Game::resetLevel() {
     for (size_t i = 0; i < characters.size(); ++i) {
         if (!characters[i]) continue;
         if (i < spawnPositions.size()) characters[i]->setPosition(spawnPositions[i]);
-        // reapply fallback based on actual runtime type
-        if (dynamic_cast<FireboyCharacter*>(characters[i].get()))
-            characters[i]->setFallbackAppearance(sf::Color::Red);
-        else if (dynamic_cast<WatergirlCharacter*>(characters[i].get()))
-            characters[i]->setFallbackAppearance(sf::Color::Blue);
-        else if (dynamic_cast<EarthboyCharacter*>(characters[i].get()))
-            characters[i]->setFallbackAppearance(sf::Color::Green);
-        else if (dynamic_cast<AirgirlCharacter*>(characters[i].get()))
-            characters[i]->setFallbackAppearance(sf::Color(220,220,255));
+        // fallback restructurat
+        characters[i]->setFallbackAppearance();
     }
 
     // reset flags

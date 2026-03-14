@@ -158,8 +158,8 @@ void Character::drawImpl(sf::RenderTarget& target) const {
     else target.draw(fallbackShape);
 }
 
-void Character::setFallbackAppearance(const sf::Color& c) {
-    fallbackShape.setFillColor(c);
+void Character::setFallbackAppearance() {
+    fallbackShape.setFillColor(getDefaultFallbackColor());
     fallbackShape.setSize({static_cast<float>(Tile::getSize()), static_cast<float>(Tile::getSize())});
     fallbackShape.setPosition(position);
 }

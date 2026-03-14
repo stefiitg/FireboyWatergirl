@@ -85,7 +85,8 @@ public:
     void moveRight(float dt);
     void jump();
     void draw(sf::RenderTarget& target) const;
-    void setFallbackAppearance(const sf::Color& c);
+
+    void setFallbackAppearance();
     void stopVerticalMovement();
 
 
@@ -98,6 +99,8 @@ public:
 protected:
     // NVI pe randare: draw() public non-virtual va apela acest hook virtual
     virtual void drawImpl(sf::RenderTarget& target) const;
+    // Each derived character specifies its own default fallback color (polymorphic)
+    virtual sf::Color getDefaultFallbackColor() const = 0;
 };
 
 // derivate
@@ -126,6 +129,8 @@ public:
     }
     bool canExitThrough(TileType tt) const override { return tt == TileType::ExitFire; }
     bool isTopHalfDeadly(TileType tt) const override { return tt == TileType::HalfWater; }
+protected:
+    sf::Color getDefaultFallbackColor() const override { return sf::Color::Red; }
 };
 
 class WatergirlCharacter : public Character {
@@ -153,6 +158,8 @@ public:
     }
     bool canExitThrough(TileType tt) const override { return tt == TileType::ExitWater; }
     bool isTopHalfDeadly(TileType tt) const override { return tt == TileType::HalfFire; }
+protected:
+    sf::Color getDefaultFallbackColor() const override { return sf::Color::Blue; }
 };
 
 
@@ -176,6 +183,8 @@ public:
     }
     // comportament neutru: doar solid e suport, lichidele omoara (moștenit)
     bool canExitThrough(TileType tt) const override { return tt == TileType::ExitEarth; }
+protected:
+    sf::Color getDefaultFallbackColor() const override { return sf::Color::Green; }
 };
 
 // Airgirl e clasa derivata adaugata la final din baza character:
@@ -196,6 +205,8 @@ public:
         os << " element=Air";
     }
     bool canExitThrough(TileType tt) const override { return tt == TileType::ExitAir; }
+protected:
+    sf::Color getDefaultFallbackColor() const override { return sf::Color::White; }
 };
 
 #endif
