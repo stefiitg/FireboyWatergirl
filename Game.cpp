@@ -395,13 +395,8 @@ Game::Game(int mapW, int mapH)
     initializeCharacters();
 
     //font ptr mesajul de castig
-    const char* candidates[] = {
-        "C:\\Windows\\Fonts\\arial.ttf",
-        "C:\\Windows\\Fonts\\segoeui.ttf",
-        "C:\\Windows\\Fonts\\verdana.ttf"
-    };
-    for (const char* path : candidates) {
-        if (winFont.loadFromFile(path)) { winFontLoaded = true; break; }
+    if (winFont.loadFromFile("assets/arial.ttf")) {
+      winFontLoaded = true;
     }
 
     if (winFontLoaded) {
