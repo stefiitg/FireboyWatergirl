@@ -163,7 +163,7 @@ void Tile::draw(sf::RenderTarget& target) const {
                 s.setScale(scaleX, scaleY);
             }
             target.draw(s);
-            return; // desenare halfwater
+            return; // desenare halfwaterr
         }
         // daca textura nu se incarca, fallback
     }
