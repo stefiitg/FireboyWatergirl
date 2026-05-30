@@ -50,11 +50,7 @@ Map::~Map() {
     // explicit
 }
 
-void Map::generateAscendingPlatforms(unsigned seed) {
-    // Backward compatibility: use Level1
-    (void)seed;
-    loadLevel(LevelType::Level1);
-}
+
 
 void Map::clear() {
     // set all tiles to Empty and clear moving platforms

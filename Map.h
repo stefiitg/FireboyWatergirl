@@ -36,7 +36,7 @@ public:
     int getHeight() const { return height; }
 
     // Legacy generator kept for backward-compat; Level1 is the original layout
-    void generateAscendingPlatforms(unsigned seed = 0);
+
     // Load a specific level layout
     void loadLevel(LevelType level);
     void update(float dt);
