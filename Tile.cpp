@@ -1,25 +1,26 @@
 
 #include "Tile.h"
+#include <memory>
 
 
-static sf::Texture g_halfWaterTex;
+static std::unique_ptr<sf::Texture> g_halfWaterTex;
 static bool g_halfWaterTexTried = false;
 static bool g_halfWaterTexOk = false;
 
 
-static sf::Texture g_halfFireTex;
+static std::unique_ptr<sf::Texture> g_halfFireTex;
 static bool g_halfFireTexTried = false;
 static bool g_halfFireTexOk = false;
 
 
-sf::Texture Tile::solidTex;
+std::unique_ptr<sf::Texture> Tile::solidTex;
 bool Tile::solidTexLoaded = false;
 bool Tile::solidTexOk = false;
 
-sf::Texture Tile::exitFireTex;
-sf::Texture Tile::exitWaterTex;
-sf::Texture Tile::exitEarthTex;
-sf::Texture Tile::exitAirTex;
+std::unique_ptr<sf::Texture> Tile::exitFireTex;
+std::unique_ptr<sf::Texture> Tile::exitWaterTex;
+std::unique_ptr<sf::Texture> Tile::exitEarthTex;
+std::unique_ptr<sf::Texture> Tile::exitAirTex;
 bool Tile::exitTexturesLoaded = false;
 bool Tile::exitFireLoaded = false;
 bool Tile::exitWaterLoaded = false;
@@ -30,17 +31,22 @@ void Tile::ensureExitTexturesLoaded() {
     if (exitTexturesLoaded) return;
     // incercam sa incarcam fiecare textura independent; pastam flags
     // nu flosim throw daca incarcarea esueaza, fallback la dreptunghiuriile initiale in caz contrar
-    exitFireLoaded = exitFireTex.loadFromFile("assets/exit_fireboy.png");
-    exitWaterLoaded = exitWaterTex.loadFromFile("assets/exit_watergirl.png");
-    exitEarthLoaded = exitEarthTex.loadFromFile("assets/exit_earthboy.png");
-    exitAirLoaded = exitAirTex.loadFromFile("assets/exit_airgirl.png");
+    exitFireTex = std::make_unique<sf::Texture>();
+    exitFireLoaded = exitFireTex->loadFromFile("assets/exit_fireboy.png");
+    exitWaterTex = std::make_unique<sf::Texture>();
+    exitWaterLoaded = exitWaterTex->loadFromFile("assets/exit_watergirl.png");
+    exitEarthTex = std::make_unique<sf::Texture>();
+    exitEarthLoaded = exitEarthTex->loadFromFile("assets/exit_earthboy.png");
+    exitAirTex = std::make_unique<sf::Texture>();
+    exitAirLoaded = exitAirTex->loadFromFile("assets/exit_airgirl.png");
     exitTexturesLoaded = true;
 }
 
 void Tile::ensureSolidTextureLoaded() {
     if (solidTexLoaded) return;
     solidTexLoaded = true;
-    solidTexOk = solidTex.loadFromFile("assets/solid.png");
+    solidTex = std::make_unique<sf::Texture>();
+    solidTexOk = solidTex->loadFromFile("assets/solid.png");
 }
 
 std::string toString(TileType t) {
@@ -131,9 +137,9 @@ void Tile::draw(sf::RenderTarget& target) const {
         ensureSolidTextureLoaded();
         if (solidTexOk) {
             sf::Sprite s;
-            s.setTexture(solidTex);
+            s.setTexture(*solidTex);
             s.setPosition(shape_.getPosition());
-            const auto texSize = solidTex.getSize();
+            const auto texSize = solidTex->getSize();
             if (texSize.x > 0 && texSize.y > 0) {
                 const float scaleX = Tile::getSize() / static_cast<float>(texSize.x);
                 const float scaleY = Tile::getSize() / static_cast<float>(texSize.y);
@@ -149,14 +155,15 @@ void Tile::draw(sf::RenderTarget& target) const {
     if (type_ == TileType::HalfWater) {
         if (!g_halfWaterTexTried) {
             g_halfWaterTexTried = true;
-            g_halfWaterTexOk = g_halfWaterTex.loadFromFile("assets/half_water.png");
+            g_halfWaterTex = std::make_unique<sf::Texture>();
+            g_halfWaterTexOk = g_halfWaterTex->loadFromFile("assets/half_water.png");
         }
 
         if (g_halfWaterTexOk) {
             sf::Sprite s;
-            s.setTexture(g_halfWaterTex);
+            s.setTexture(*g_halfWaterTex);
             s.setPosition(shape_.getPosition());
-            const auto texSize = g_halfWaterTex.getSize();
+            const auto texSize = g_halfWaterTex->getSize();
             if (texSize.x > 0 && texSize.y > 0) {
                 const float scaleX = Tile::getSize() / static_cast<float>(texSize.x);
                 const float scaleY = Tile::getSize() / static_cast<float>(texSize.y);
@@ -172,14 +179,15 @@ void Tile::draw(sf::RenderTarget& target) const {
     if (type_ == TileType::HalfFire) {
         if (!g_halfFireTexTried) {
             g_halfFireTexTried = true;
-            g_halfFireTexOk = g_halfFireTex.loadFromFile("assets/half_fire.png");
+            g_halfFireTex = std::make_unique<sf::Texture>();
+            g_halfFireTexOk = g_halfFireTex->loadFromFile("assets/half_fire.png");
         }
 
         if (g_halfFireTexOk) {
             sf::Sprite s;
-            s.setTexture(g_halfFireTex);
+            s.setTexture(*g_halfFireTex);
             s.setPosition(shape_.getPosition());
-            const auto texSize = g_halfFireTex.getSize();
+            const auto texSize = g_halfFireTex->getSize();
             if (texSize.x > 0 && texSize.y > 0) {
                 const float scaleX = Tile::getSize() / static_cast<float>(texSize.x);
                 const float scaleY = Tile::getSize() / static_cast<float>(texSize.y);
@@ -198,10 +206,10 @@ void Tile::draw(sf::RenderTarget& target) const {
         const sf::Texture* tex = nullptr;
         bool ok = false;
         switch (type_) {
-            case TileType::ExitFire:  tex = &exitFireTex;  ok = exitFireLoaded;  break;
-            case TileType::ExitWater: tex = &exitWaterTex; ok = exitWaterLoaded; break;
-            case TileType::ExitEarth: tex = &exitEarthTex; ok = exitEarthLoaded; break;
-            case TileType::ExitAir:   tex = &exitAirTex;   ok = exitAirLoaded;   break;
+            case TileType::ExitFire:  tex = exitFireTex.get();  ok = exitFireLoaded;  break;
+            case TileType::ExitWater: tex = exitWaterTex.get(); ok = exitWaterLoaded; break;
+            case TileType::ExitEarth: tex = exitEarthTex.get(); ok = exitEarthLoaded; break;
+            case TileType::ExitAir:   tex = exitAirTex.get();   ok = exitAirLoaded;   break;
             default: break;
         }
 

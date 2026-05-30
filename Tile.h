@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <ostream>
 #include <string>
+#include <memory>
 
 enum class TileType { Empty, Solid, Fire, Water, HalfFire, HalfWater, Coin, FireCoin, WaterCoin, EarthCoin, ExitFire, ExitWater, ExitEarth, ExitAir };
 
@@ -25,15 +26,15 @@ public:
 
 private:
     // texturi statice ptr tile ul solid
-    static sf::Texture solidTex;
+    static std::unique_ptr<sf::Texture> solidTex;
     static bool solidTexLoaded;
     static bool solidTexOk;      // -daca incarcarea e cu succes
 
     // texturi statice ptr tile urile exit
-    static sf::Texture exitFireTex;
-    static sf::Texture exitWaterTex;
-    static sf::Texture exitEarthTex;
-    static sf::Texture exitAirTex;
+    static std::unique_ptr<sf::Texture> exitFireTex;
+    static std::unique_ptr<sf::Texture> exitWaterTex;
+    static std::unique_ptr<sf::Texture> exitEarthTex;
+    static std::unique_ptr<sf::Texture> exitAirTex;
     static bool exitTexturesLoaded;
     static bool exitFireLoaded;          // flag uri individuale pt incarcare cu succes
     static bool exitWaterLoaded;
