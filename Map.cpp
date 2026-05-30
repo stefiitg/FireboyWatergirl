@@ -68,6 +68,7 @@ void Map::loadLevel(LevelType level) {
         case LevelType::Level1: generateLevel1(); break;
         case LevelType::Level2: generateLevel2(); break;
         case LevelType::Level3: generateLevel3(); break;
+        case LevelType::Level4: generateLevel4(); break;
         default: generateLevel1(); break;
     }
 }
@@ -205,6 +206,81 @@ void Map::generateLevel2() {
         grid[height-4][1] = Tile(TileType::FireCoin, 1, height-4);
         if (width > 8) grid[height-6][8] = Tile(TileType::WaterCoin, 8, height-6);
         if (width > 5) grid[height-5][5] = Tile(TileType::EarthCoin, 5, height-5);
+    }
+}
+
+void Map::generateLevel4() {
+    // Dense level with multiple top platforms, exits at bottom corners,
+    // mid-map mixed hazards, scattered coins of different types, and a few moving platforms
+    // 1) Base ground solid line
+    for (int c = 0; c < width; ++c) {
+        grid[height - 1][c] = Tile(TileType::Solid, c, height - 1);
+    }
+
+    // 2) Exits at bottom corners with small supports
+    if (width >= 2) {
+        grid[height - 2][0] = Tile(TileType::ExitFire, 0, height - 2);
+        grid[height - 2][width - 1] = Tile(TileType::ExitWater, width - 1, height - 2);
+        // place other two exits near corners too
+        if (width > 3) grid[height - 2][2] = Tile(TileType::ExitEarth, 2, height - 2);
+        if (width > 4) grid[height - 2][width - 3] = Tile(TileType::ExitAir, width - 3, height - 2);
+    }
+
+    // 3) Top dense platforms
+    int topRow1 = 1;
+    int topRow2 = 2;
+    for (int c = 1; c < width - 1; ++c) {
+        if (c % 2 == 0) grid[topRow1][c] = Tile(TileType::Solid, c, topRow1);
+        if (c % 3 != 0) grid[topRow2][c] = Tile(TileType::Solid, c, topRow2);
+    }
+
+    // 4) Mid platforms in a staggered pattern
+    int midStart = std::max(3, height / 2 - 2);
+    for (int r = midStart; r < height - 2; r += 2) {
+        for (int c = 1; c < width - 1; ++c) {
+            if (((r + c) % 3) == 0) grid[r][c] = Tile(TileType::Solid, c, r);
+        }
+    }
+
+    // 5) Mixed hazards in the middle: half-fire and half-water in alternating columns
+    int hazardRow = height / 2;
+    for (int c = 2; c < width - 2; ++c) {
+        if (c % 2 == 0)
+            grid[hazardRow][c] = Tile(TileType::HalfFire, c, hazardRow);
+        else
+            grid[hazardRow][c] = Tile(TileType::HalfWater, c, hazardRow);
+    }
+
+    // 6) Coins of various types scattered
+    // Ensure at least 4 coins of different types
+    if (width > 2 && height > 4) {
+        grid[3][1] = Tile(TileType::FireCoin, 1, 3);
+        grid[3][width - 2] = Tile(TileType::WaterCoin, width - 2, 3);
+        grid[height - 4][2] = Tile(TileType::EarthCoin, 2, height - 4);
+        grid[height - 5][width - 3] = Tile(TileType::Coin, width - 3, height - 5);
+    }
+    // additional scattered coins
+    for (int c = 2; c < width - 2; ++c) {
+        int r = (c % 2 == 0) ? (topRow2 + 1) : (topRow1 + 1);
+        TileType ct = (c % 4 == 0) ? TileType::FireCoin : (c % 4 == 1) ? TileType::WaterCoin : (c % 4 == 2) ? TileType::EarthCoin : TileType::Coin;
+        if (r >= 0 && r < height - 2) grid[r][c] = Tile(ct, c, r);
+    }
+
+    // 7) A couple of moving platforms near the center and upper mid
+    const float ts = static_cast<float>(Tile::getSize());
+    if (width > 6 && height > 6) {
+        int row = height / 2 - 1; int col = width / 2 - 2;
+        sf::Vector2f startPos(col * ts, row * ts);
+        float minX = (col - 2) * ts;
+        float maxX = (col + 2) * ts;
+        movingPlatforms.emplace_back(startPos, minX, maxX, 70.f, 1);
+    }
+    if (width > 10 && height > 4) {
+        int row = 4; int col = width / 2;
+        sf::Vector2f startPos(col * ts, row * ts);
+        float minX = (col - 3) * ts;
+        float maxX = (col + 3) * ts;
+        movingPlatforms.emplace_back(startPos, minX, maxX, 90.f, 1);
     }
 }
 

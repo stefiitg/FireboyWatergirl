@@ -72,6 +72,9 @@ add_executable(${MAIN_EXECUTABLE_NAME}
         CharacterFactory.h
         Button.cpp
         Button.h
+        Button.cpp
+        HUD.cpp
+        HUD.h
 )
 
 # NOTE: Add all defined targets (e.g. executables, libraries, etc. )

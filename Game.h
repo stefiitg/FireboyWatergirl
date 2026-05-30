@@ -8,6 +8,7 @@
 #include "Map.h"
 #include "Character.h"
 #include "Button.h"
+#include "HUD.h"
 
 class Game {
 private:
@@ -45,6 +46,9 @@ private:
     bool winFontLoaded = false;
     //  mesajul de pierdere
     sf::Text loseText;
+
+    // HUD
+    HUD gameHud;
 
     void processInput(float dt);
     // Returns true if this character reached its exit during collision handling

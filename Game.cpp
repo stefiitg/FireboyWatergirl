@@ -266,7 +266,10 @@ bool Game::handleCollisions(Character& ch) {
 }
 
 void Game::update(float dt) {
-    if (won || gameOver) return;
+    if (won || gameOver) { // still keep HUD updated
+        gameHud.update(currentLevel, collectedCoins, totalCoins);
+        return;
+    }
 
     map.update(dt);
     sf::FloatRect world = map.worldBounds();
@@ -292,6 +295,9 @@ void Game::update(float dt) {
             won = true;
         }
     }
+
+    // update HUD at the end
+    gameHud.update(currentLevel, collectedCoins, totalCoins);
 }
 
 void Game::handlePlatformCollisions(Character& ch) {
@@ -332,6 +338,9 @@ void Game::render() {
     for (const auto& ch : characters) {
         if (ch) ch->draw(*window);
     }
+
+    // Render HUD before overlays
+    gameHud.render(*window);
 
     if (won) {
 
@@ -410,13 +419,17 @@ Game::Game(int mapW, int mapH)
         // keep compatibility with existing checks
         winFontLoaded = true;
 
-        // Initialize menu buttons (three level buttons centered on screen)
+        // Initialize HUD using the loaded font
+        gameHud.init(font, window->getSize().x);
+
+        // Initialize menu buttons (four level buttons centered on screen)
         const float btnWidth = 200.f;
         const float btnHeight = 50.f;
         const float spacing = 20.f;
         const float centerX = static_cast<float>(window->getSize().x) * 0.5f;
         const float centerY = static_cast<float>(window->getSize().y) * 0.5f;
-        const float startY = centerY - (btnHeight * 1.5f + spacing); // place first above center
+        const float totalH = 4.f * btnHeight + 3.f * spacing;
+        const float startY = centerY - totalH * 0.5f; // top-aligned to center the full stack
 
         sf::Color idleCol(60, 60, 60);
         sf::Color hoverCol(100, 100, 100);
@@ -432,7 +445,7 @@ Game::Game(int mapW, int mapH)
             idleCol, hoverCol, activeCol
         );
         menuButtons.emplace_back(
-            makeButtonPosX(btnWidth), startY + btnHeight + spacing,
+            makeButtonPosX(btnWidth), startY + (btnHeight + spacing),
             btnWidth, btnHeight,
             font, std::string("Level 2"), 24,
             idleCol, hoverCol, activeCol
@@ -441,6 +454,12 @@ Game::Game(int mapW, int mapH)
             makeButtonPosX(btnWidth), startY + 2.f * (btnHeight + spacing),
             btnWidth, btnHeight,
             font, std::string("Level 3"), 24,
+            idleCol, hoverCol, activeCol
+        );
+        menuButtons.emplace_back(
+            makeButtonPosX(btnWidth), startY + 3.f * (btnHeight + spacing),
+            btnWidth, btnHeight,
+            font, std::string("Level 4"), 24,
             idleCol, hoverCol, activeCol
         );
     }
@@ -542,6 +561,9 @@ void Game::processMenuInput() {
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3) || sf::Keyboard::isKeyPressed(sf::Keyboard::Numpad3)) {
         currentLevel = LevelType::Level3;
         startLevel();
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4) || sf::Keyboard::isKeyPressed(sf::Keyboard::Numpad4)) {
+        currentLevel = LevelType::Level4;
+        startLevel();
     }
 
     // Mouse-based menu interaction
@@ -556,7 +578,7 @@ void Game::processMenuInput() {
     if (leftDown && !isMouseHeld) {
         isMouseHeld = true;
         // Determine which button was pressed
-        if (menuButtons.size() >= 3) {
+        if (menuButtons.size() >= 4) {
             if (menuButtons[0].isPressed()) {
                 currentLevel = LevelType::Level1;
                 startLevel();
@@ -565,6 +587,9 @@ void Game::processMenuInput() {
                 startLevel();
             } else if (menuButtons[2].isPressed()) {
                 currentLevel = LevelType::Level3;
+                startLevel();
+            } else if (menuButtons[3].isPressed()) {
+                currentLevel = LevelType::Level4;
                 startLevel();
             }
         }

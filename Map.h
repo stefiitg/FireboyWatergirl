@@ -11,7 +11,8 @@
 enum class LevelType {
     Level1,
     Level2,
-    Level3
+    Level3,
+    Level4
 };
 
 class Map {
@@ -24,6 +25,7 @@ private:
     void generateLevel1();
     void generateLevel2();
     void generateLevel3();
+    void generateLevel4();
     void clear();
 
 public:
