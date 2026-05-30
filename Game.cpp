@@ -381,18 +381,8 @@ Game::Game(int mapW, int mapH)
         throw WindowCreationError("Failed to create SFML window. Ensure a display is available and SFML is configured correctly.");
     }
 
-    map.generateAscendingPlatforms(12345);
-
-    totalCoins = 0;
-    collectedCoins = 0;
-    for (int rr = 0; rr < map.getHeight(); ++rr) {
-        for (int cc = 0; cc < map.getWidth(); ++cc) {
-            TileType t = map.getTileTypeAtGrid(cc, rr);
-            if (t == TileType::Coin || t == TileType::FireCoin || t == TileType::WaterCoin || t == TileType::EarthCoin) totalCoins++;
-        }
-    }
-    // initialize all characters in one place
-    initializeCharacters();
+    // Start in Menu state; level will be loaded via startLevel() after selection
+    state = GameState::Menu;
 
     //font ptr mesajul de castig
     if (winFont.loadFromFile("assets/arial.ttf")) {
@@ -423,7 +413,7 @@ Game::Game(int mapW, int mapH)
 
 void Game::resetLevel() {
     // regenerare harta si resetare
-    map.generateAscendingPlatforms(12345);
+    map.loadLevel(currentLevel);
     totalCoins = 0;
     collectedCoins = 0;
     for (int rr = 0; rr < map.getHeight(); ++rr) {
@@ -473,8 +463,72 @@ void Game::run() {
         float dt = clock.restart().asSeconds();
         // Clamp dt to avoid large spikes (e.g., when dragging the window) that can cause physics tunneling
         if (dt > 0.05f) dt = 0.05f;
-        processInput(dt);
-        update(dt);
-        render(); //-fix eroare la dragging ul ferestrei
+        if (state == GameState::Menu) {
+            processMenuInput();
+            renderMenu();
+        } else {
+            processInput(dt);
+            update(dt);
+            render(); //-fix eroare la dragging ul ferestrei
+        }
     }
+}
+
+void Game::startLevel() {
+    map.loadLevel(currentLevel);
+
+    // recompute coins exactly as before
+    totalCoins = 0;
+    collectedCoins = 0;
+    for (int rr = 0; rr < map.getHeight(); ++rr) {
+        for (int cc = 0; cc < map.getWidth(); ++cc) {
+            TileType t = map.getTileTypeAtGrid(cc, rr);
+            if (t == TileType::Coin || t == TileType::FireCoin || t == TileType::WaterCoin || t == TileType::EarthCoin) totalCoins++;
+        }
+    }
+
+    initializeCharacters();
+
+    won = false;
+    gameOver = false;
+    charactersAtExit.assign(characters.size(), false);
+
+    state = GameState::Playing;
+}
+
+void Game::processMenuInput() {
+    if (!window) return;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1) || sf::Keyboard::isKeyPressed(sf::Keyboard::Numpad1)) {
+        currentLevel = LevelType::Level1;
+        startLevel();
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2) || sf::Keyboard::isKeyPressed(sf::Keyboard::Numpad2)) {
+        currentLevel = LevelType::Level2;
+        startLevel();
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3) || sf::Keyboard::isKeyPressed(sf::Keyboard::Numpad3)) {
+        currentLevel = LevelType::Level3;
+        startLevel();
+    }
+}
+
+void Game::renderMenu() {
+    if (!window) return;
+    window->clear(sf::Color(30, 30, 30));
+
+    if (winFontLoaded) {
+        sf::Text title;
+        title.setFont(winFont);
+        title.setString("Select Level:\n1 - Level 1\n2 - Level 2\n3 - Level 3");
+        unsigned int size = static_cast<unsigned int>(std::max(22.f, (window->getSize().y * 0.08f)));
+        title.setCharacterSize(size);
+        title.setFillColor(sf::Color::White);
+        title.setOutlineThickness(3.f);
+        title.setOutlineColor(sf::Color::Black);
+
+        sf::FloatRect textRect = title.getLocalBounds();
+        title.setOrigin(textRect.left + textRect.width / 2.f, textRect.top + textRect.height / 2.f);
+        title.setPosition(static_cast<float>(window->getSize().x) / 2.f,
+                          static_cast<float>(window->getSize().y) / 2.f);
+        window->draw(title);
+    }
+    window->display();
 }

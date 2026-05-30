@@ -28,6 +28,11 @@ private:
     };
     std::vector<Controls> characterControls;
     
+    // Game states and level tracking
+    enum class GameState { Menu, Playing };
+    GameState state = GameState::Menu;
+    LevelType currentLevel = LevelType::Level1;
+
     bool won = false;
     bool gameOver = false;
 
@@ -48,6 +53,9 @@ private:
     void resetLevel();
     void handlePlatformCollisions(Character& ch);
     void initializeCharacters();
+    void startLevel();
+    void processMenuInput();
+    void renderMenu();
 
 public:
     explicit Game(int mapW = 14, int mapH = 9);
@@ -73,6 +81,8 @@ public:
         swap(winText, other.winText);
         swap(winFontLoaded, other.winFontLoaded);
         swap(loseText, other.loseText);
+        swap(state, other.state);
+        swap(currentLevel, other.currentLevel);
     }
     friend std::ostream& operator<<(std::ostream& os, const Game& g);
     void run();

@@ -51,17 +51,36 @@ Map::~Map() {
 }
 
 void Map::generateAscendingPlatforms(unsigned seed) {
-    //  generarea aleatoare -eliminata pentru moment
+    // Backward compatibility: use Level1
     (void)seed;
+    loadLevel(LevelType::Level1);
+}
 
-    // resetare harta la empty
-    for (int r = 0; r < height; ++r)
-        for (int c = 0; c < width; ++c)
+void Map::clear() {
+    // set all tiles to Empty and clear moving platforms
+    for (int r = 0; r < height; ++r) {
+        for (int c = 0; c < width; ++c) {
             grid[r][c] = Tile(TileType::Empty, c, r);
+        }
+    }
+    movingPlatforms.clear();
+}
 
+void Map::loadLevel(LevelType level) {
+    clear();
+    switch (level) {
+        case LevelType::Level1: generateLevel1(); break;
+        case LevelType::Level2: generateLevel2(); break;
+        case LevelType::Level3: generateLevel3(); break;
+        default: generateLevel1(); break;
+    }
+}
+
+void Map::generateLevel1() {
+    // Original content of generateAscendingPlatforms
     // niste placi solide
     const std::pair<int,int> solids[] = {
-        {1, 7}, {3, 7}, {9, 5}, {11, 4}//eliminare solid sixseven
+        {1, 7}, {3, 7}, {9, 5}, {11, 4}
     };
     for (const auto& rc : solids) {
         int c = rc.first;
@@ -71,8 +90,6 @@ void Map::generateAscendingPlatforms(unsigned seed) {
         }
     }
 
-
-    movingPlatforms.clear();
     if (height > 6 && width > 8) {
         const float ts = static_cast<float>(Tile::getSize());
         int row = 6; int col = 7;
@@ -82,17 +99,13 @@ void Map::generateAscendingPlatforms(unsigned seed) {
         movingPlatforms.emplace_back(startPos, minX, maxX, 80.f, 1);
     }
 
-    //  (row:7,col:2) -> halfFire
-    //  (row:6,col:11) - > halfWater
     grid[height-2][2] = Tile(TileType::HalfFire, 2, height-2);
     grid[height-3][width-3] = Tile(TileType::HalfWater, width-3, height-3);
 
-    //  (row:7,col:1) -- halfFire
     if (height > 2 && width > 1) {
         grid[height-2][1] = Tile(TileType::HalfFire, 1, height-2);
     }
 
-    // Solid: (row:7,col:0), (row:6,col:10), (row:6,col:12)
     if (height > 2 && width > 0) {
         grid[height-2][0] = Tile(TileType::Solid, 0, height-2);
     }
@@ -103,19 +116,15 @@ void Map::generateAscendingPlatforms(unsigned seed) {
         grid[height-3][12] = Tile(TileType::Solid, 12, height-3);
     }
     grid[1][width-2] = Tile(TileType::ExitFire, width-2, 1);
-    // tile solid pt suportul lui fireboy la exit
     if (height > 2) {
         grid[2][width-2] = Tile(TileType::Solid, width-2, 2);
     }
-    //  watergirl exit-- (row=2, col=1)
     if (height > 2 && width > 1) {
         grid[2][1] = Tile(TileType::ExitWater, 1, 2);
     }
-    // Earthboy exit-- (row:2 , col:4)
     if (height > 2 && width > 4) {
         grid[2][4] = Tile(TileType::ExitEarth, 4, 2);
     }
-    // airgirl exit -- (row:2, col:10)
     if (height > 2 && width > 10) {
         grid[2][10] = Tile(TileType::ExitAir, 10, 2);
     }
@@ -126,7 +135,6 @@ void Map::generateAscendingPlatforms(unsigned seed) {
             grid[3][4] = Tile(TileType::Solid, 4, 3);
         }
     }
-    // support sub exitul lui airgirl
     if (height > 3 && width > 10) {
         grid[3][10] = Tile(TileType::Solid, 10, 3);
     }
@@ -134,9 +142,6 @@ void Map::generateAscendingPlatforms(unsigned seed) {
         grid[5][2] = Tile(TileType::Solid, 2, 5);
     }
 
-    // monede specifice personajelor:
-    // watergirl: (row:8,col:7),(8,8),(8,9)
-    // fireboy: (row:8,col:1),(8,2)
     if (height > 8) {
         int r = 8;
         if (width > 7) grid[r][7] = Tile(TileType::WaterCoin, 7, r);
@@ -146,8 +151,6 @@ void Map::generateAscendingPlatforms(unsigned seed) {
         if (width > 2) grid[r][2] = Tile(TileType::FireCoin, 2, r);
     }
 
-    // Earthboy coins  (row,col): (5,7), (4,9), (3,11)
-    // ne asiguram ca dimensiunile mapei permit coinurile
     if (height > 5 && width > 7) {
         grid[5][7] = Tile(TileType::EarthCoin, 7, 5);
     }
@@ -156,6 +159,68 @@ void Map::generateAscendingPlatforms(unsigned seed) {
     }
     if (height > 3 && width > 11) {
         grid[3][11] = Tile(TileType::EarthCoin, 11, 3);
+    }
+}
+
+void Map::generateLevel2() {
+    // Different layout: more solids on a different pattern, different coin/exits placement
+    // base ground
+    for (int c = 0; c < width; ++c) {
+        grid[height-1][c] = Tile(TileType::Solid, c, height-1);
+    }
+    // some platforms
+    if (height > 4) {
+        for (int c = 2; c < std::min(width, 6); ++c) grid[height-4][c] = Tile(TileType::Solid, c, height-4);
+        for (int c = std::max(0, width-6); c < width-2; ++c) grid[height-6][c] = Tile(TileType::Solid, c, height-6);
+    }
+    // moving platform in a different row/range
+    if (height > 5 && width > 6) {
+        const float ts = static_cast<float>(Tile::getSize());
+        int row = height - 5; int col = 3;
+        sf::Vector2f startPos(col * ts, row * ts);
+        float minX = 2 * ts;
+        float maxX = 5 * ts;
+        movingPlatforms.emplace_back(startPos, minX, maxX, 90.f, 1);
+    }
+    // exits on top row corners
+    if (height > 2) {
+        grid[1][1] = Tile(TileType::ExitFire, 1, 1);
+        grid[1][3] = Tile(TileType::ExitWater, 3, 1);
+        grid[1][width-4] = Tile(TileType::ExitEarth, width-4, 1);
+        grid[1][width-2] = Tile(TileType::ExitAir, width-2, 1);
+        // supports under exits
+        grid[2][1] = Tile(TileType::Solid, 1, 2);
+        grid[2][3] = Tile(TileType::Solid, 3, 2);
+        grid[2][width-4] = Tile(TileType::Solid, width-4, 2);
+        grid[2][width-2] = Tile(TileType::Solid, width-2, 2);
+        grid[6][6]= Tile(TileType::Solid, 6, 6);
+        grid[7][1]= Tile(TileType::Solid, 1, 7);
+        grid[7][3]= Tile(TileType::Solid, 3, 7);
+        grid[6][12]= Tile(TileType::Solid, 12, 6);
+        grid[6][10]= Tile(TileType::Solid, 10, 6);
+    }
+    // hazards
+    if (height > 3) {
+        grid[height-2][std::min(2, width-1)] = Tile(TileType::HalfFire, std::min(2, width-1), height-2);
+        grid[height-3][std::max(0, width-3)] = Tile(TileType::HalfWater, std::max(0, width-3), height-3);
+    }
+    // coins
+    if (height > 4) {
+        grid[height-4][1] = Tile(TileType::FireCoin, 1, height-4);
+        if (width > 8) grid[height-6][8] = Tile(TileType::WaterCoin, 8, height-6);
+        if (width > 5) grid[height-5][5] = Tile(TileType::EarthCoin, 5, height-5);
+    }
+}
+
+void Map::generateLevel3() {
+    // Variation of Level1 with minor changes
+    generateLevel1();
+    // add an extra solid and move a coin if possible
+    if (height > 4 && width > 6) {
+        grid[4][6] = Tile(TileType::Solid, 6, 4);
+    }
+    if (height > 8 && width > 3) {
+        grid[8][3] = Tile(TileType::FireCoin, 3, 8);
     }
 }
 
@@ -200,7 +265,7 @@ sf::FloatRect Map::worldBounds() const {
 
 //pozitiile de spawn ptr personaje
 sf::Vector2f Map::respawnWorldPosForFire() const {
-    return sf::Vector2f(Tile::getSize() * 1.f, Tile::getSize() * (height - 2));
+    return sf::Vector2f(Tile::getSize() * 0.f, Tile::getSize() * (height - 2));
 }
 
 sf::Vector2f Map::respawnWorldPosForWater() const {
@@ -209,12 +274,12 @@ sf::Vector2f Map::respawnWorldPosForWater() const {
 
 sf::Vector2f Map::respawnWorldPosForEarth() const {
 
-    return sf::Vector2f(Tile::getSize() * 3.f, Tile::getSize() * (height - 2));
+    return sf::Vector2f(Tile::getSize() * 6.f, Tile::getSize() * (height - 2));
 }
 
 sf::Vector2f Map::respawnWorldPosForAir() const {
     // Fixed spawn at (row=8, col=4)
-    return sf::Vector2f(Tile::getSize() * 4.f, Tile::getSize() * 8.f);
+    return sf::Vector2f(Tile::getSize() * 7.f, Tile::getSize() * (height-2));
 }
 
 void Map::update(float dt) {

@@ -7,6 +7,13 @@
 #include "Tile.h"
 #include "MovingPlatform.h"
 
+// Levels available in the game
+enum class LevelType {
+    Level1,
+    Level2,
+    Level3
+};
+
 class Map {
 private:
     std::vector<std::vector<Tile>> grid;
@@ -14,6 +21,10 @@ private:
     std::vector<MovingPlatform> movingPlatforms;
 
     void allocateGrid(int w, int h, TileType defaultType = TileType::Empty);
+    void generateLevel1();
+    void generateLevel2();
+    void generateLevel3();
+    void clear();
 
 public:
     explicit Map(int w = 12, int h = 8, TileType defaultType = TileType::Empty);
@@ -24,7 +35,10 @@ public:
     int getWidth() const { return width; }
     int getHeight() const { return height; }
 
+    // Legacy generator kept for backward-compat; Level1 is the original layout
     void generateAscendingPlatforms(unsigned seed = 0);
+    // Load a specific level layout
+    void loadLevel(LevelType level);
     void update(float dt);
 
     TileType getTileTypeAtGrid(int col, int row) const;
