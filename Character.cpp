@@ -1,6 +1,7 @@
 #include "Character.h"
 #include <algorithm>
 #include <utility>
+#include "ResourceManager.h"
 
 void Character::initFallbackShape(const sf::Color& c, const sf::Vector2f& size) {
     fallbackShape.setSize(size);
@@ -14,11 +15,15 @@ Character::Character(const std::string& nm, const std::string& texturePath,
     : name(nm), usingTexture(false), position(pos), velocity(0.f, 0.f),
       lives(lifeCount), onGround(false)
 {
-    if (!texturePath.empty() && texture.loadFromFile(texturePath)) {
+    if (!texturePath.empty()) {
         usingTexture = true;
-        sprite.setTexture(texture);
-        if (texture.getSize().y > 0) {
-            float factor = Tile::getSize() / static_cast<float>(texture.getSize().y);
+
+        // Preluam textura direct din Singleton
+        sf::Texture& managedTexture = ResourceManager<sf::Texture>::getInstance().getResource(texturePath);
+        sprite.setTexture(managedTexture);
+
+        if (managedTexture.getSize().y > 0) {
+            float factor = Tile::getSize() / static_cast<float>(managedTexture.getSize().y);
             sprite.setScale(factor, factor);
         }
         sprite.setPosition(position);

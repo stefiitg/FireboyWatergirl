@@ -1,5 +1,8 @@
 #include "Game.h"
 #include "GameExceptions.h"
+#include "MathUtils.h"
+#include "ResourceManager.h"
+#include "CharacterFactory.h"
 #include <iostream>
 #include <utility>
 #include <algorithm>
@@ -18,12 +21,13 @@ void Game::initializeCharacters() {
     spawnPositions.clear();
     characterControls.clear();
 
+    // Demonstrate template class instantiation for textures
+    ResourceManager<sf::Texture>::getInstance().getResource("assets/fireboy1.png");
 
     // 1) Fireboy
     {
         sf::Vector2f spawn = map.respawnWorldPosForFire();
-        auto fb = std::make_unique<FireboyCharacter>(
-            "Fireboy", "assets/fireboy1.png", spawn, 3, sf::Color::Red);
+        auto fb = CharacterFactory::createCharacter(PlayerType::Fireboy, spawn);
         if (!fb->isUsingTexture()) {
             throw ResourceLoadError("Failed to load mandatory asset: assets/fireboy1.png");
         }
@@ -37,8 +41,7 @@ void Game::initializeCharacters() {
     // 2) Watergirl
     {
         sf::Vector2f spawn = map.respawnWorldPosForWater();
-        auto wg = std::make_unique<WatergirlCharacter>(
-            "Watergirl", "assets/watergirl1.png", spawn, 3, sf::Color::Blue);
+        auto wg = CharacterFactory::createCharacter(PlayerType::Watergirl, spawn);
         if (!wg->isUsingTexture()) {
             throw ResourceLoadError("Failed to load mandatory asset: assets/watergirl1.png");
         }
@@ -52,8 +55,7 @@ void Game::initializeCharacters() {
     // 3) Earthboy
     {
         sf::Vector2f spawn = map.respawnWorldPosForEarth();
-        auto eb = std::make_unique<EarthboyCharacter>(
-            "Earthboy", "assets/earthboy.png", spawn, 3, sf::Color::Green);
+        auto eb = CharacterFactory::createCharacter(PlayerType::Earthboy, spawn);
         if (!eb->isUsingTexture()) {
             throw ResourceLoadError("Failed to load mandatory asset: assets/earthboy.png");
         }
@@ -67,8 +69,7 @@ void Game::initializeCharacters() {
     // 4) Airgirl
     {
         sf::Vector2f spawn = map.respawnWorldPosForAir();
-        auto ag = std::make_unique<AirgirlCharacter>(
-            "Airgirl", "assets/airgirl.png", spawn, 3, sf::Color(220,220,255));
+        auto ag = CharacterFactory::createCharacter(PlayerType::Airgirl, spawn);
         if (!ag->isUsingTexture()) {
             throw ResourceLoadError("Failed to load mandatory asset: assets/airgirl.png");
         }
@@ -155,10 +156,12 @@ void Game::processInput(float dt) {
 bool Game::handleCollisions(Character& ch) {
     bool reachedExitForCharacter = false;
     sf::FloatRect cb = ch.bounds();
-    int leftCol = std::max(0, static_cast<int>(cb.left / Tile::getSize()));
-    int rightCol = std::min(map.getWidth()-1, static_cast<int>((cb.left + cb.width) / Tile::getSize()));
-    int topRow = std::max(0, static_cast<int>(cb.top / Tile::getSize()));
-    int bottomRow = std::min(map.getHeight()-1, static_cast<int>(cb.top + cb.height) / Tile::getSize());
+    int maxCol = map.getWidth() - 1;
+    int maxRow = map.getHeight() - 1;
+    int leftCol = clamp<int>(static_cast<int>(cb.left / Tile::getSize()), 0, maxCol);
+    int rightCol = clamp<int>(static_cast<int>((cb.left + cb.width) / Tile::getSize()), 0, maxCol);
+    int topRow = clamp<int>(static_cast<int>(cb.top / Tile::getSize()), 0, maxRow);
+    int bottomRow = clamp<int>(static_cast<int>((cb.top + cb.height) / Tile::getSize()), 0, maxRow);
 
     for (int r = topRow; r <= bottomRow; ++r) {
         for (int c = leftCol; c <= rightCol; ++c) {
@@ -384,13 +387,11 @@ Game::Game(int mapW, int mapH)
     // Start in Menu state; level will be loaded via startLevel() after selection
     state = GameState::Menu;
 
-    //font ptr mesajul de castig
-    if (winFont.loadFromFile("assets/arial.ttf")) {
-      winFontLoaded = true;
-    }
-
-    if (winFontLoaded) {
-        winText.setFont(winFont);
+    // Load font using ResourceManager (Singleton template)
+    {
+        sf::Font& font = ResourceManager<sf::Font>::getInstance().getResource("assets/arial.ttf");
+        // apply directly to texts
+        winText.setFont(font);
         winText.setString("WIN");
         // dimensiunea textului proportional cu inaltimea ferestrei
         unsigned int size = static_cast<unsigned int>(std::max(30.f, (window->getSize().y * 0.2f)));
@@ -400,14 +401,14 @@ Game::Game(int mapW, int mapH)
         winText.setOutlineColor(sf::Color::Black);
         // pozitia exacta va fi recalculata in render() pentru a ramane centrata
         // configureaza si textul pentru ecranul de pierdere
-        loseText.setFont(winFont);
+        loseText.setFont(font);
         loseText.setString("TRY AGAIN!");
         loseText.setCharacterSize(size);
         loseText.setFillColor(sf::Color(220, 20, 60));
         loseText.setOutlineThickness(4.f);
         loseText.setOutlineColor(sf::Color::Black);
-    } else {
-        std::cerr << "Warning: Could not load a system font for WIN text. Title fallback will be used.\n";
+        // keep compatibility with existing checks
+        winFontLoaded = true;
     }
 }
 
@@ -462,7 +463,7 @@ void Game::run() {
         }
         float dt = clock.restart().asSeconds();
         // Clamp dt to avoid large spikes (e.g., when dragging the window) that can cause physics tunneling
-        if (dt > 0.05f) dt = 0.05f;
+        dt = clamp<float>(dt, 0.0f, 0.05f);
         if (state == GameState::Menu) {
             processMenuInput();
             renderMenu();
@@ -516,7 +517,7 @@ void Game::renderMenu() {
 
     if (winFontLoaded) {
         sf::Text title;
-        title.setFont(winFont);
+        title.setFont(ResourceManager<sf::Font>::getInstance().getResource("assets/arial.ttf"));
         title.setString("Select Level:\n1 - Level 1\n2 - Level 2\n3 - Level 3");
         unsigned int size = static_cast<unsigned int>(std::max(22.f, (window->getSize().y * 0.08f)));
         title.setCharacterSize(size);
