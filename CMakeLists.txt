@@ -75,6 +75,7 @@ add_executable(${MAIN_EXECUTABLE_NAME}
         Button.cpp
         HUD.cpp
         HUD.h
+        HUD.cpp
 )
 
 # NOTE: Add all defined targets (e.g. executables, libraries, etc. )
