@@ -70,6 +70,8 @@ add_executable(${MAIN_EXECUTABLE_NAME}
         MathUtils.h
         ResourceManager.h
         CharacterFactory.h
+        Button.cpp
+        Button.h
 )
 
 # NOTE: Add all defined targets (e.g. executables, libraries, etc. )

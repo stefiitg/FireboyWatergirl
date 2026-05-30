@@ -409,6 +409,40 @@ Game::Game(int mapW, int mapH)
         loseText.setOutlineColor(sf::Color::Black);
         // keep compatibility with existing checks
         winFontLoaded = true;
+
+        // Initialize menu buttons (three level buttons centered on screen)
+        const float btnWidth = 200.f;
+        const float btnHeight = 50.f;
+        const float spacing = 20.f;
+        const float centerX = static_cast<float>(window->getSize().x) * 0.5f;
+        const float centerY = static_cast<float>(window->getSize().y) * 0.5f;
+        const float startY = centerY - (btnHeight * 1.5f + spacing); // place first above center
+
+        sf::Color idleCol(60, 60, 60);
+        sf::Color hoverCol(100, 100, 100);
+        sf::Color activeCol(220, 100, 50);
+
+        auto makeButtonPosX = [&](float w){ return centerX - w * 0.5f; };
+
+        menuButtons.clear();
+        menuButtons.emplace_back(
+            makeButtonPosX(btnWidth), startY,
+            btnWidth, btnHeight,
+            font, std::string("Level 1"), 24,
+            idleCol, hoverCol, activeCol
+        );
+        menuButtons.emplace_back(
+            makeButtonPosX(btnWidth), startY + btnHeight + spacing,
+            btnWidth, btnHeight,
+            font, std::string("Level 2"), 24,
+            idleCol, hoverCol, activeCol
+        );
+        menuButtons.emplace_back(
+            makeButtonPosX(btnWidth), startY + 2.f * (btnHeight + spacing),
+            btnWidth, btnHeight,
+            font, std::string("Level 3"), 24,
+            idleCol, hoverCol, activeCol
+        );
     }
 }
 
@@ -509,27 +543,59 @@ void Game::processMenuInput() {
         currentLevel = LevelType::Level3;
         startLevel();
     }
+
+    // Mouse-based menu interaction
+    sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
+    sf::Vector2f mousePos = window->mapPixelToCoords(pixelPos);
+
+    for (auto& btn : menuButtons) {
+        btn.update(mousePos);
+    }
+
+    bool leftDown = sf::Mouse::isButtonPressed(sf::Mouse::Left);
+    if (leftDown && !isMouseHeld) {
+        isMouseHeld = true;
+        // Determine which button was pressed
+        if (menuButtons.size() >= 3) {
+            if (menuButtons[0].isPressed()) {
+                currentLevel = LevelType::Level1;
+                startLevel();
+            } else if (menuButtons[1].isPressed()) {
+                currentLevel = LevelType::Level2;
+                startLevel();
+            } else if (menuButtons[2].isPressed()) {
+                currentLevel = LevelType::Level3;
+                startLevel();
+            }
+        }
+    } else if (!leftDown) {
+        isMouseHeld = false;
+    }
 }
 
 void Game::renderMenu() {
     if (!window) return;
     window->clear(sf::Color(30, 30, 30));
 
+    // Optional small title at the top
     if (winFontLoaded) {
-        sf::Text title;
-        title.setFont(ResourceManager<sf::Font>::getInstance().getResource("assets/arial.ttf"));
-        title.setString("Select Level:\n1 - Level 1\n2 - Level 2\n3 - Level 3");
-        unsigned int size = static_cast<unsigned int>(std::max(22.f, (window->getSize().y * 0.08f)));
-        title.setCharacterSize(size);
-        title.setFillColor(sf::Color::White);
-        title.setOutlineThickness(3.f);
-        title.setOutlineColor(sf::Color::Black);
+        sf::Text smallTitle;
+        smallTitle.setFont(ResourceManager<sf::Font>::getInstance().getResource("assets/arial.ttf"));
+        smallTitle.setString("Select Level");
+        unsigned int size = static_cast<unsigned int>(std::max(18.f, (window->getSize().y * 0.05f)));
+        smallTitle.setCharacterSize(size);
+        smallTitle.setFillColor(sf::Color::White);
+        smallTitle.setOutlineThickness(2.f);
+        smallTitle.setOutlineColor(sf::Color::Black);
+        sf::FloatRect tr = smallTitle.getLocalBounds();
+        smallTitle.setOrigin(tr.left + tr.width / 2.f, tr.top + tr.height / 2.f);
+        smallTitle.setPosition(static_cast<float>(window->getSize().x) / 2.f, 40.f);
+        window->draw(smallTitle);
+    }
 
-        sf::FloatRect textRect = title.getLocalBounds();
-        title.setOrigin(textRect.left + textRect.width / 2.f, textRect.top + textRect.height / 2.f);
-        title.setPosition(static_cast<float>(window->getSize().x) / 2.f,
-                          static_cast<float>(window->getSize().y) / 2.f);
-        window->draw(title);
+    // Render buttons
+    for (const auto& btn : menuButtons) {
+        btn.render(*window);
     }
     window->display();
 }

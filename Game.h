@@ -7,6 +7,7 @@
 #include <SFML/Graphics.hpp>
 #include "Map.h"
 #include "Character.h"
+#include "Button.h"
 
 class Game {
 private:
@@ -83,9 +84,15 @@ public:
         swap(loseText, other.loseText);
         swap(state, other.state);
         swap(currentLevel, other.currentLevel);
+        swap(menuButtons, other.menuButtons);
+        swap(isMouseHeld, other.isMouseHeld);
     }
     friend std::ostream& operator<<(std::ostream& os, const Game& g);
     void run();
+private:
+    // Menu UI
+    std::vector<Button> menuButtons;
+    bool isMouseHeld = false;
 };
 
 #endif // OOP_GAME_H

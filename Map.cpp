@@ -209,9 +209,89 @@ void Map::generateLevel2() {
 }
 
 void Map::generateLevel3() {
-    // Variation of Level1 with minor changes
-    generateLevel1();
-    // add an extra solid and move a coin if possible
+  const std::pair<int,int> solids[] = {
+        {1, 7}, {3, 7}, {9, 5}, {11, 4}
+    };
+    for (const auto& rc : solids) {
+        int c = rc.first;
+        int r = rc.second;
+        if (r >= 0 && r < height && c >= 0 && c < width) {
+            grid[r][c] = Tile(TileType::Solid, c, r);
+        }
+    }
+
+    if (height > 6 && width > 8) {
+        const float ts = static_cast<float>(Tile::getSize());
+        int row = 6; int col = 7;
+        sf::Vector2f startPos(col * ts, row * ts);
+        float minX = 6 * ts;
+        float maxX = 8 * ts;
+        movingPlatforms.emplace_back(startPos, minX, maxX, 80.f, 1);
+    }
+
+    grid[height-2][2] = Tile(TileType::HalfFire, 2, height-2);
+    grid[height-3][width-3] = Tile(TileType::HalfWater, width-3, height-3);
+
+    if (height > 2 && width > 1) {
+        grid[height-2][1] = Tile(TileType::HalfFire, 1, height-2);
+    }
+
+    if (height > 2 && width > 0) {
+        grid[height-2][0] = Tile(TileType::Solid, 0, height-2);
+    }
+    if (height > 3 && width > 10) {
+        grid[height-3][10] = Tile(TileType::Solid, 10, height-3);
+    }
+    if (height > 3 && width > 12) {
+        grid[height-3][12] = Tile(TileType::Solid, 12, height-3);
+    }
+    grid[1][width-2] = Tile(TileType::ExitFire, width-2, 1);
+    if (height > 2) {
+        grid[2][width-2] = Tile(TileType::Solid, width-2, 2);
+    }
+    if (height > 2 && width > 1) {
+        grid[2][1] = Tile(TileType::ExitWater, 1, 2);
+    }
+    if (height > 2 && width > 4) {
+        grid[2][4] = Tile(TileType::ExitEarth, 4, 2);
+    }
+    if (height > 2 && width > 10) {
+        grid[2][10] = Tile(TileType::ExitAir, 10, 2);
+    }
+
+    if (height > 3) {
+        grid[3][1] = Tile(TileType::Solid, 1, 3);
+        if (width > 4) {
+            grid[3][4] = Tile(TileType::Solid, 4, 3);
+        }
+    }
+    if (height > 3 && width > 10) {
+        grid[3][10] = Tile(TileType::Solid, 10, 3);
+    }
+    if (height > 5 && width > 2) {
+        grid[5][2] = Tile(TileType::Solid, 2, 5);
+    }
+
+    if (height > 8) {
+        int r = 8;
+        if (width > 7) grid[r][7] = Tile(TileType::WaterCoin, 7, r);
+        if (width > 8) grid[r][8] = Tile(TileType::WaterCoin, 8, r);
+        if (width > 9) grid[r][9] = Tile(TileType::WaterCoin, 9, r);
+        if (width > 1) grid[r][1] = Tile(TileType::FireCoin, 1, r);
+        if (width > 2) grid[r][2] = Tile(TileType::FireCoin, 2, r);
+    }
+
+    if (height > 5 && width > 7) {
+        grid[5][7] = Tile(TileType::EarthCoin, 7, 5);
+    }
+    if (height > 4 && width > 9) {
+        grid[4][9] = Tile(TileType::EarthCoin, 9, 4);
+    }
+    if (height > 3 && width > 11) {
+        grid[3][11] = Tile(TileType::EarthCoin, 11, 3);
+    }
+
+    // adding la lvl:
     if (height > 4 && width > 6) {
         grid[4][6] = Tile(TileType::Solid, 6, 4);
     }
