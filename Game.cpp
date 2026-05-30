@@ -77,7 +77,7 @@ void Game::initializeCharacters() {
         spawnPositions.push_back(spawn);
         characters.push_back(std::move(ag));
         charactersAtExit.push_back(false);
-        characterControls.push_back(Controls{sf::Keyboard::Numpad4, sf::Keyboard::Numpad6, sf::Keyboard::Numpad8});
+        characterControls.push_back(Controls{sf::Keyboard::Z, sf::Keyboard::C, sf::Keyboard::X});
     }
 
     // fill prototypes by cloning active characters

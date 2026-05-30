@@ -254,17 +254,13 @@ void Map::generateLevel4() {
     // 6) Coins of various types scattered
     // Ensure at least 4 coins of different types
     if (width > 2 && height > 4) {
-        grid[3][1] = Tile(TileType::FireCoin, 1, 3);
-        grid[3][width - 2] = Tile(TileType::WaterCoin, width - 2, 3);
-        grid[height - 4][2] = Tile(TileType::EarthCoin, 2, height - 4);
-        grid[height - 5][width - 3] = Tile(TileType::Coin, width - 3, height - 5);
+        grid[6][1] = Tile(TileType::FireCoin, 1, 6);
+        grid[6][width - 2] = Tile(TileType::WaterCoin, width - 2, 6);
+        grid[6][2] = Tile(TileType::EarthCoin, 2, 6);
+
     }
     // additional scattered coins
-    for (int c = 2; c < width - 2; ++c) {
-        int r = (c % 2 == 0) ? (topRow2 + 1) : (topRow1 + 1);
-        TileType ct = (c % 4 == 0) ? TileType::FireCoin : (c % 4 == 1) ? TileType::WaterCoin : (c % 4 == 2) ? TileType::EarthCoin : TileType::Coin;
-        if (r >= 0 && r < height - 2) grid[r][c] = Tile(ct, c, r);
-    }
+
 
     // 7) A couple of moving platforms near the center and upper mid
     const float ts = static_cast<float>(Tile::getSize());
@@ -417,7 +413,7 @@ sf::FloatRect Map::worldBounds() const {
 
 //pozitiile de spawn ptr personaje
 sf::Vector2f Map::respawnWorldPosForFire() const {
-    return sf::Vector2f(Tile::getSize() * 0.f, Tile::getSize() * (height - 2));
+    return sf::Vector2f(Tile::getSize() * 4.f, Tile::getSize() * (height - 2));
 }
 
 sf::Vector2f Map::respawnWorldPosForWater() const {
