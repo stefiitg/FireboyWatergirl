@@ -235,12 +235,18 @@ void Map::generateLevel4() {
     }
 
     // 4) Mid platforms in a staggered pattern
-    int midStart = std::max(3, height / 2 - 2);
+
+   /*int midStart = std::max(4, height / 2 - 1);
     for (int r = midStart; r < height - 2; r += 2) {
         for (int c = 1; c < width - 1; ++c) {
             if (((r + c) % 3) == 0) grid[r][c] = Tile(TileType::Solid, c, r);
         }
-    }
+    }*/
+   int  midStart=height/2+2;
+   int r=midStart;
+    for (int c=1;c<width;c++)
+    if (c%3==1) grid[r][c]=Tile(TileType::Solid, c, r);
+
 
     // 5) Mixed hazards in the middle: half-fire and half-water in alternating columns
     int hazardRow = height / 2;
@@ -254,7 +260,7 @@ void Map::generateLevel4() {
     // 6) Coins of various types scattered
     // Ensure at least 4 coins of different types
     if (width > 2 && height > 4) {
-        grid[6][1] = Tile(TileType::FireCoin, 1, 6);
+        grid[3][2] = Tile(TileType::FireCoin, 2, 3);
         grid[6][width - 2] = Tile(TileType::WaterCoin, width - 2, 6);
         grid[6][2] = Tile(TileType::EarthCoin, 2, 6);
 
