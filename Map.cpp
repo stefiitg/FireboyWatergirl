@@ -247,7 +247,7 @@ void Map::generateLevel4() {
     for (int c=1;c<width;c++)
     if (c%3==1) grid[r][c]=Tile(TileType::Solid, c, r);*/
 
-
+grid[6][1]=Tile(TileType::Solid, 1, 6);
     // 5) Mixed hazards in the middle: half-fire and half-water in alternating columns
     int hazardRow = height / 2;
     for (int c = 2; c < width - 2; ++c) {
