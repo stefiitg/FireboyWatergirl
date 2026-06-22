@@ -236,16 +236,16 @@ void Map::generateLevel4() {
 
     // 4) Mid platforms in a staggered pattern
 
-   /*int midStart = std::max(4, height / 2 - 1);
+   int midStart = std::max(4, height / 2 - 1);
     for (int r = midStart; r < height - 2; r += 2) {
         for (int c = 1; c < width - 1; ++c) {
             if (((r + c) % 3) == 0) grid[r][c] = Tile(TileType::Solid, c, r);
         }
-    }*/
-   int  midStart=height/2+2;
+    }
+   /*int  midStart=height/2+2;
    int r=midStart;
     for (int c=1;c<width;c++)
-    if (c%3==1) grid[r][c]=Tile(TileType::Solid, c, r);
+    if (c%3==1) grid[r][c]=Tile(TileType::Solid, c, r);*/
 
 
     // 5) Mixed hazards in the middle: half-fire and half-water in alternating columns
