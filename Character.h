@@ -23,7 +23,7 @@ private:
     bool onGround{false};
 
     float speed = 160.f; // px/s
-    float jumpImpulse = 360.f;
+    float jumpImpulse = 435.f;
     static constexpr float GRAVITY = 900.f;
 
     void initFallbackShape(const sf::Color& c, const sf::Vector2f& size);

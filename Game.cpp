@@ -10,7 +10,41 @@
 namespace {
     inline bool intersects(const sf::FloatRect& a, const sf::FloatRect& b) {
         return a.intersects(b);
-    }//..
+    }
+
+    inline void resolveCollision(Character& ch, sf::FloatRect& cb, const sf::FloatRect& rect) {
+        float charCenterX = cb.left + cb.width * 0.5f;
+        float rectCenterX = rect.left + rect.width * 0.5f;
+        float charCenterY = cb.top + cb.height * 0.5f;
+        float rectCenterY = rect.top + rect.height * 0.5f;
+
+        float dx = charCenterX - rectCenterX;
+        float dy = charCenterY - rectCenterY;
+
+        float intersectX = (cb.width + rect.width) * 0.5f - std::abs(dx);
+        float intersectY = (cb.height + rect.height) * 0.5f - std::abs(dy);
+
+        if (intersectX > 0.0f && intersectY > 0.0f) {
+            if (intersectX < intersectY) {
+                // Lateral/Horizontal resolution
+                if (dx > 0.0f) {
+                    ch.setPosition({rect.left + rect.width, cb.top});
+                } else {
+                    ch.setPosition({rect.left - cb.width, cb.top});
+                }
+            } else {
+                // Vertical resolution
+                if (dy > 0.0f) {
+                    ch.setPosition({cb.left, rect.top + rect.height});
+                    ch.stopVerticalMovement();
+                } else {
+                    ch.setPosition({cb.left, rect.top - cb.height});
+                    ch.setOnGround(true);
+                }
+            }
+            cb = ch.bounds();
+        }
+    }
 }
 
 void Game::initializeCharacters() {
@@ -171,16 +205,7 @@ bool Game::handleCollisions(Character& ch) {
             if (ch.isSolidOn(tt)) {
                 sf::FloatRect tileRect(c * Tile::getSize(), r * Tile::getSize(), Tile::getSize(), Tile::getSize());
                 if (intersects(cb, tileRect)) {
-                    float charCenterY = cb.top + cb.height*0.5f;
-                    float tileCenterY = tileRect.top + tileRect.height*0.5f;
-                    ch.setOnGround(true);
-                    if (charCenterY < tileCenterY) {
-                        ch.setPosition({cb.left, tileRect.top - cb.height});
-                    } else {
-                        ch.setPosition({cb.left, tileRect.top + tileRect.height});
-                        ch.stopVerticalMovement();
-                    }
-                    cb = ch.bounds();
+                    resolveCollision(ch, cb, tileRect);
                 }
             }
 
@@ -193,16 +218,7 @@ bool Game::handleCollisions(Character& ch) {
 
                 // partea de jos e solida pt toti
                 if (intersects(cb, bottomRect)) {
-                    float charCenterY = cb.top + cb.height * 0.5f;
-                    float tileCenterY = bottomRect.top + bottomRect.height * 0.5f;
-                    ch.setOnGround(true);
-                    if (charCenterY < tileCenterY) {
-                        ch.setPosition({cb.left, bottomRect.top - cb.height});
-                    } else {
-                        ch.setPosition({cb.left, bottomRect.top + bottomRect.height});
-                        ch.stopVerticalMovement();
-                    }
-                    cb = ch.bounds();
+                    resolveCollision(ch, cb, bottomRect);
                 }
 
 
@@ -306,17 +322,7 @@ void Game::handlePlatformCollisions(Character& ch) {
     for (const auto& mp : map.getMovingPlatforms()) {
         sf::FloatRect pb = mp.bounds();
         if (cb.intersects(pb)) {
-
-            float charCenterY = cb.top + cb.height * 0.5f;
-            float platCenterY = pb.top + pb.height * 0.5f;
-            ch.setOnGround(true);
-            if (charCenterY < platCenterY) {
-                ch.setPosition({cb.left, pb.top - cb.height});
-            } else {
-                ch.setPosition({cb.left, pb.top + pb.height});
-                ch.stopVerticalMovement();
-            }
-            cb = ch.bounds();
+            resolveCollision(ch, cb, pb);
         } else {
             // CARRY minimal
             const float epsilon = 1.5f;
