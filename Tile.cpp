@@ -27,6 +27,16 @@ bool Tile::exitWaterLoaded = false;
 bool Tile::exitEarthLoaded = false;
 bool Tile::exitAirLoaded = false;
 
+void Tile::cleanupTextures() {
+    solidTex.reset();
+    exitFireTex.reset();
+    exitWaterTex.reset();
+    exitEarthTex.reset();
+    exitAirTex.reset();
+    g_halfWaterTex.reset();
+    g_halfFireTex.reset();
+}
+
 void Tile::ensureExitTexturesLoaded() {
     if (exitTexturesLoaded) return;
     // incercam sa incarcam fiecare textura independent; pastam flags

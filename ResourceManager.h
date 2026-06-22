@@ -43,6 +43,11 @@ public:
         resources[filePath] = resource;
         return resources[filePath];
     }
+
+    // Curăță toate resursele încărcate, esențial pentru a preveni segfault-uri la ieșirea pe Linux.
+    void clear() {
+        resources.clear();
+    }
 };
 
 #endif // OOP_RESOURCEMANAGER_H

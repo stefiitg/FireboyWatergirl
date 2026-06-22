@@ -44,6 +44,10 @@ private:
     static void ensureExitTexturesLoaded();
     static void ensureSolidTextureLoaded();
 
+public:
+    static void cleanupTextures();
+
+private:
     TileType type_ = TileType::Empty;
     [[maybe_unused]] int col_ = 0;
     [[maybe_unused]] int row_ = 0;
