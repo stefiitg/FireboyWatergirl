@@ -44,7 +44,6 @@ void Character::setOnGround(bool state) {
 
 Character::Character(const Character& other)
     : name(other.name),
-      texture(other.texture),
       sprite(other.sprite),
       fallbackShape(other.fallbackShape),
       usingTexture(other.usingTexture),
@@ -55,13 +54,11 @@ Character::Character(const Character& other)
       speed(other.speed),
       jumpImpulse(other.jumpImpulse)
 {
-    if (usingTexture) sprite.setTexture(texture);
 }
 
 Character& Character::operator=(const Character& other) {
     if (this == &other) return *this;
     name = other.name;
-    texture = other.texture;
     sprite = other.sprite;
     fallbackShape = other.fallbackShape;
     usingTexture = other.usingTexture;
@@ -71,14 +68,12 @@ Character& Character::operator=(const Character& other) {
     onGround = other.onGround;
     speed = other.speed;
     jumpImpulse = other.jumpImpulse;
-    if (usingTexture) sprite.setTexture(texture);
     return *this;
 }
 
 void Character::swap(Character& other) noexcept {
     using std::swap;
     swap(name, other.name);
-    swap(texture, other.texture);
     swap(sprite, other.sprite);
     swap(fallbackShape, other.fallbackShape);
     swap(usingTexture, other.usingTexture);
@@ -88,10 +83,6 @@ void Character::swap(Character& other) noexcept {
     swap(onGround, other.onGround);
     swap(speed, other.speed);
     swap(jumpImpulse, other.jumpImpulse);
-
-    // reatașează textura la sprite pentru ambele obiecte dupa swap
-    if (usingTexture) sprite.setTexture(texture);
-    if (other.usingTexture) other.sprite.setTexture(other.texture);
 }
 
 sf::FloatRect Character::bounds() const {

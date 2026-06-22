@@ -14,7 +14,6 @@ enum class Element { Fire, Water, Neutral, Air };
 class Character {
 private:
     std::string name;
-    sf::Texture texture;
     sf::Sprite sprite;
     sf::RectangleShape fallbackShape;
     bool usingTexture{};
